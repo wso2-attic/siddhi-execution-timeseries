@@ -149,7 +149,6 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
             regResult = new Object[] { stderr, beta0, beta1 };
         } catch (Exception e) {
             regResult = new Object[] { 0.0, 0.0, 0.0 };
-            //TODO should this be logged; reason for having this?
         }
         return regResult;
     }
