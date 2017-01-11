@@ -37,6 +37,10 @@
             <artifactId>siddhi-execution-timeseries</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -62,9 +66,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>
-                                    org.wso2.extension.siddhi.execution.timeseries:siddhi-execution-timeseries
-                                </bundleDef>
+                                <bundleDef>org.wso2.extension.siddhi.execution.timeseries:siddhi-execution-timeseries</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
