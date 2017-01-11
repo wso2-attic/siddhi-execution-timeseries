@@ -67,7 +67,6 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.extension.siddhi.execution.timeseries:siddhi-execution-timeseries</bundleDef>
-                                <bundleDef>org.apache.commons:commons-math3:${commons-math3.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
