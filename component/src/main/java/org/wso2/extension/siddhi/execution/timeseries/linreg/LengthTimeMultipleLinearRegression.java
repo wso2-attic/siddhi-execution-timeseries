@@ -18,15 +18,17 @@
 
 package org.wso2.extension.siddhi.execution.timeseries.linreg;
 
+import Jama.Matrix;
+
+import org.apache.commons.math3.distribution.TDistribution;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import org.apache.commons.math3.distribution.TDistribution;
-import Jama.Matrix;
 
-/*
- * This class handles multiple linear regression in real time
+/**
+ * This class handles multiple linear regression in real time.
  * Multiple linear regression concerns single dependent variable (Y) and multiple independent
  * variables (X1, X2....Xn)
  */
@@ -36,7 +38,7 @@ public class LengthTimeMultipleLinearRegression extends LengthTimeRegressionCalc
     private Queue<Long> expiryTimeList = new PriorityQueue<Long>();
 
     /**
-     * This method calls the constructor of super class
+     * This method calls the constructor of super class.
      *
      * @param paramCount   Number of X variables + 1 (Y variable)
      * @param timeWindow   Time window which is used to constrain number of events
@@ -50,7 +52,7 @@ public class LengthTimeMultipleLinearRegression extends LengthTimeRegressionCalc
     }
 
     /**
-     * Method to accumulate new events: dependent (Y) and independent (X) variable values
+     * Method to accumulate new events: dependent (Y) and independent (X) variable values.
      *
      * @param data       Array which holds Y and X values
      * @param expiryTime Time at which each event should expire (based on time window)
@@ -73,7 +75,7 @@ public class LengthTimeMultipleLinearRegression extends LengthTimeRegressionCalc
     }
 
     /**
-     * Method to remove events which have expired based on time and/or length
+     * Method to remove events which have expired based on time and/or length.
      */
     @Override
     protected void removeExpiredEvents() {
@@ -94,7 +96,7 @@ public class LengthTimeMultipleLinearRegression extends LengthTimeRegressionCalc
     }
 
     /**
-     * Method which performs multiple linear regression
+     * Method which performs multiple linear regression.
      *
      * @return Array containing standard error and beta values
      */

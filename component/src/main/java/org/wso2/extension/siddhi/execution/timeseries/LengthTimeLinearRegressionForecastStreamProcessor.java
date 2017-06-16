@@ -17,24 +17,30 @@
  */
 package org.wso2.extension.siddhi.execution.timeseries;
 
-import org.wso2.siddhi.core.config.ExecutionPlanContext;
+import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressionCalculator;
+import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
+import org.wso2.siddhi.annotation.Example;
+import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
 import org.wso2.siddhi.core.event.stream.StreamEventCloner;
 import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
-import org.wso2.siddhi.core.exception.ExecutionPlanCreationException;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.processor.Processor;
 import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
-import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressionCalculator;
-import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
+import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
-import java.util.ArrayList;
-import java.util.List;
 
-/*
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
  * Sample Query1 (time window, length window, nextX, y, x):
  * from InputStream#timeseries:lengthTimeOutlier(20 min, 20, x+2, y, x)
  * select *
@@ -48,31 +54,44 @@ import java.util.List;
  * This class performs enables users to forecast future events using linear regression
  * Number of data points could be constrained using both time and length windows.
  */
+
+@Extension(
+        name = "lengthTimeForecast",
+        namespace = "timeseries",
+        description = "TBD",
+        parameters = {},
+        examples = {
+                @Example(
+                        syntax = "TBD",
+                        description =  "TBD"
+                )
+        }
+)
 public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamProcessor {
+    private static final int SIMPLE_LINREG_INPUT_PARAM_COUNT = 2; //Number of input parameters in
     private int paramCount; // Number of x variables +1
     private long duration; // Time window to consider for regression calculation
     private int calcInterval = 1; // The frequency of regression calculation
     private double ci = 0.95; // Confidence Interval simple linear forecast
     private LengthTimeRegressionCalculator regressionCalculator = null;
     private int yParameterPosition;
-    private static final int SIMPLE_LINREG_INPUT_PARAM_COUNT = 2; //Number of input parameters in
-                                                                  // simple linear regression
+    // simple linear regression
 
     /**
-     * The init method of the LinearRegressionOutlierStreamProcessor,
-     * this method will be called before other methods
+     * The init method of the LinearRegressionOutlierStreamProcessor.
+     * This method will be called before other methods
      *
-     * @param inputDefinition the incoming stream definition
-     * @param attributeExpressionExecutors the executors of each function parameters
-     * @param executionPlanContext the context of the execution plan
+     * @param abstractDefinition  the incoming stream definition
+     * @param expressionExecutors the executors of each function parameters
+     * @param siddhiAppContext    the context of the execution plan
      * @return the additional output attributes introduced by the function
      */
     @Override
-    protected List<Attribute> init(AbstractDefinition inputDefinition,
-                                   ExpressionExecutor[] attributeExpressionExecutors,
-                                   ExecutionPlanContext executionPlanContext) {
-        paramCount = attributeExpressionLength -3; // First three events are time window, length
-                                                   // window and x value for forecasting y
+    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
+                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+
+        paramCount = attributeExpressionLength - 3; // First three events are time window, length
+        // window and x value for forecasting y
         yParameterPosition = 3;
         // Capture Constant inputs
         // Capture duration
@@ -84,12 +103,12 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
                 duration = (Long) ((ConstantExpressionExecutor)
                         attributeExpressionExecutors[0]).getValue();
             } else {
-                throw new ExecutionPlanCreationException(
+                throw new SiddhiAppCreationException(
                         "Time duration parameter should be either int or long, but found "
                                 + attributeExpressionExecutors[0].getReturnType());
             }
         } else {
-            throw new ExecutionPlanCreationException("Time duration parameter must be a constant");
+            throw new SiddhiAppCreationException("Time duration parameter must be a constant");
         }
         // Capture batchSize
         int batchSize; // Maximum # of events, used for regression calculation
@@ -98,24 +117,24 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
                 batchSize = (Integer) ((ConstantExpressionExecutor)
                         attributeExpressionExecutors[1]).getValue();
             } else {
-                throw new ExecutionPlanCreationException
+                throw new SiddhiAppCreationException
                         ("Size parameter should be int, but found "
                                 + attributeExpressionExecutors[1].getReturnType());
             }
         } else {
-            throw new ExecutionPlanCreationException("Size parameter must be a constant");
+            throw new SiddhiAppCreationException("Size parameter must be a constant");
         }
         // Capture calculation interval and ci if provided by user
         // Default values would be used otherwise
         if (attributeExpressionExecutors[3] instanceof ConstantExpressionExecutor) {
             paramCount = paramCount - 2; // When calcInterval and ci are given by user,
-                                         // parameter count must exclude those two as well
+            // parameter count must exclude those two as well
             yParameterPosition = 5;
             if (attributeExpressionExecutors[3].getReturnType() == Attribute.Type.INT) {
                 calcInterval = (Integer) ((ConstantExpressionExecutor)
                         attributeExpressionExecutors[3]).getValue();
             } else {
-                throw new ExecutionPlanCreationException
+                throw new SiddhiAppCreationException
                         ("Calculation interval should be int, but found "
                                 + attributeExpressionExecutors[3].getReturnType());
             }
@@ -124,21 +143,21 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
                     ci = (Double) ((ConstantExpressionExecutor)
                             attributeExpressionExecutors[4]).getValue();
                     if (!(0 <= ci && ci <= 1)) {
-                        throw new ExecutionPlanCreationException
+                        throw new SiddhiAppCreationException
                                 ("Confidence interval should be a value between 0 and 1");
                     }
                 } else {
-                    throw new ExecutionPlanCreationException
+                    throw new SiddhiAppCreationException
                             ("Confidence interval should be double, but found "
                                     + attributeExpressionExecutors[4].getReturnType());
                 }
             } else {
-                throw new ExecutionPlanCreationException("Confidence interval must be a constant");
+                throw new SiddhiAppCreationException("Confidence interval must be a constant");
             }
         }
         // Pick the appropriate regression calculator
         if (paramCount > SIMPLE_LINREG_INPUT_PARAM_COUNT) {
-            throw new ExecutionPlanCreationException(
+            throw new SiddhiAppCreationException(
                     "Forecast Function is available only for simple linear regression");
         } else {
             regressionCalculator = new LengthTimeSimpleLinearRegressionCalculator(paramCount,
@@ -157,7 +176,7 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
     }
 
     /**
-     * The main processing method that will be called upon event arrival
+     * The main processing method that will be called upon event arrival.
      *
      * @param streamEventChunk      the event chunk that need to be processed
      * @param nextProcessor         the next processor to which the success events need to be passed
@@ -172,7 +191,7 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 StreamEvent streamEvent = streamEventChunk.next();
-                long currentTime = executionPlanContext.getTimestampGenerator().currentTime();
+                long currentTime = siddhiAppContext.getTimestampGenerator().currentTime();
                 long eventExpiryTime = currentTime + duration;
                 Object[] inputData = new Object[paramCount];
                 // Obtain position of next x value (xDashPosition)
@@ -204,6 +223,7 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
         nextProcessor.process(streamEventChunk);
     }
 
+
     /**
      * This will be called only once and this can be used to acquire required resources for the
      * processing element.
@@ -224,26 +244,14 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
 
     }
 
-    /**
-     * Used to collect the serializable state of the processing element, that need to be
-     * persisted for reconstructing the element to the same state at a different point of time
-     *
-     * @return stateful objects of the processing element as an array
-     */
     @Override
-    public Object[] currentState() {
-        return new Object[0];
+    public synchronized Map<String, Object> currentState() {
+        Map<String, Object> state = new HashMap<String, Object>();
+        return state;
     }
 
-    /**
-     * Used to restore serialized state of the processing element, for reconstructing
-     * the element to the same state as if was on a previous point of time.
-     *
-     * @param state the stateful objects of the element as an array on the same order provided
-     *              by currentState().
-     */
     @Override
-    public void restoreState(Object[] state) {
+    public synchronized void restoreState(Map<String, Object> state) {
 
     }
 }

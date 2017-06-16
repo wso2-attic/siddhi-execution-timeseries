@@ -20,7 +20,9 @@ package org.wso2.extension.siddhi.execution.timeseries.extrema;
 
 
 import org.wso2.extension.siddhi.execution.timeseries.extrema.util.ExtremaCalculator;
-import org.wso2.siddhi.core.config.ExecutionPlanContext;
+import org.wso2.siddhi.annotation.Example;
+import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
 import org.wso2.siddhi.core.event.stream.StreamEventCloner;
@@ -30,20 +32,35 @@ import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.executor.VariableExpressionExecutor;
 import org.wso2.siddhi.core.query.processor.Processor;
 import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
+import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
-import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
+import org.wso2.siddhi.query.api.exception.SiddhiAppValidationException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
-public class KernelMinMaxStreamProcessor extends StreamProcessor {
+/**
+ * Implementation of Kernel Min Max for siddhiQL.
+ */
 
-    public enum ExtremaType {
-        MIN, MAX, MINMAX
-    }
+@Extension(
+        name = "kernelMinMax",
+        namespace = "timeseries",
+        description = "TBD",
+        parameters = {},
+        examples = {
+                @Example(
+                        syntax = "TBD",
+                        description =  "TBD"
+                )
+        }
+)
+public class KernelMinMaxStreamProcessor extends StreamProcessor {
 
     ExtremaType extremaType;
     int[] variablePosition;
@@ -52,43 +69,59 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
     LinkedList<StreamEvent> eventStack = null;
     Queue<Double> valueStack = null;
     Queue<StreamEvent> uniqueQueue = null;
+    ExtremaCalculator extremaCalculator = null;
     private int minEventPos;
     private int maxEventPos;
-    ExtremaCalculator extremaCalculator = null;
 
     @Override
-    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors,
-                                   ExecutionPlanContext executionPlanContext) {
+    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
+                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
 
         if (attributeExpressionExecutors.length != 4) {
-            throw new ExecutionPlanValidationException("Invalid no of arguments passed to KernelMinMaxStreamProcessor, required 4, " +
+            throw new SiddhiAppValidationException("Invalid no of arguments passed to KernelMinMaxStreamProcessor," +
+                    " required 4, " +
                     "but found " + attributeExpressionExecutors.length);
         }
-        if (!(attributeExpressionExecutors[0].getReturnType() == Attribute.Type.DOUBLE || attributeExpressionExecutors[0].getReturnType() == Attribute.Type.INT
-                || attributeExpressionExecutors[0].getReturnType() == Attribute.Type.FLOAT || attributeExpressionExecutors[0].getReturnType() == Attribute.Type.LONG)) {
-            throw new ExecutionPlanValidationException("Invalid parameter type found for the 1st argument of KernelMinMaxStreamProcessor, " +
-                    "required " + Attribute.Type.DOUBLE + " or " + Attribute.Type.FLOAT + " or " + Attribute.Type.INT + " or " +
-                    Attribute.Type.LONG + " but found " + attributeExpressionExecutors[0].getReturnType().toString());
+        if (!(attributeExpressionExecutors[0].getReturnType() == Attribute.Type.DOUBLE ||
+                attributeExpressionExecutors[0].getReturnType() == Attribute.Type.INT
+                || attributeExpressionExecutors[0].getReturnType() == Attribute.Type.FLOAT ||
+                attributeExpressionExecutors[0].getReturnType() == Attribute.Type.LONG)) {
+            throw new SiddhiAppValidationException("Invalid parameter type found for the 1st argument" +
+                    " of KernelMinMaxStreamProcessor, " +
+                    "required " + Attribute.Type.DOUBLE + " or " + Attribute.Type.FLOAT + " or "
+                    + Attribute.Type.INT + " or " +
+                    Attribute.Type.LONG + " but found " + attributeExpressionExecutors[0]
+                    .getReturnType().toString());
         }
 
         try {
-            bw = Double.parseDouble(String.valueOf(((ConstantExpressionExecutor) attributeExpressionExecutors[1]).getValue()));
+            bw = Double.parseDouble(String.valueOf(((ConstantExpressionExecutor) attributeExpressionExecutors[1])
+                    .getValue()));
         } catch (NumberFormatException e) {
-            throw new ExecutionPlanValidationException("Invalid parameter type found for the 2nd argument of KernelMinMaxStreamProcessor " +
-                    "required " + Attribute.Type.DOUBLE + " constant, but found " + attributeExpressionExecutors[1].getReturnType().toString());
+            throw new SiddhiAppValidationException("Invalid parameter type found for the 2nd argument" +
+                    " of KernelMinMaxStreamProcessor " +
+                    "required " + Attribute.Type.DOUBLE + " constant, but found " + attributeExpressionExecutors[1]
+                    .getReturnType().toString());
         }
 
-        if (!(attributeExpressionExecutors[2] instanceof ConstantExpressionExecutor) || attributeExpressionExecutors[2].getReturnType() != Attribute.Type.INT) {
-            throw new ExecutionPlanValidationException("Invalid parameter type found for the 3rd argument of KernelMinMaxStreamProcessor, " +
-                    "required " + Attribute.Type.INT + " constant, but found " + attributeExpressionExecutors[2].getReturnType().toString());
+        if (!(attributeExpressionExecutors[2] instanceof ConstantExpressionExecutor) || attributeExpressionExecutors[2]
+                .getReturnType() != Attribute.Type.INT) {
+            throw new SiddhiAppValidationException("Invalid parameter type found for the 3rd argument " +
+                    "of KernelMinMaxStreamProcessor, " +
+                    "required " + Attribute.Type.INT + " constant, but found " + attributeExpressionExecutors[2]
+                    .getReturnType().toString());
         }
-        if (!(attributeExpressionExecutors[3] instanceof ConstantExpressionExecutor) || attributeExpressionExecutors[3].getReturnType() != Attribute.Type.STRING) {
-            throw new ExecutionPlanValidationException("Invalid parameter type found for the 4th argument of KernelMinMaxStreamProcessor, " +
-                    "required " + Attribute.Type.STRING + " constant, but found " + attributeExpressionExecutors[2].getReturnType().toString());
+        if (!(attributeExpressionExecutors[3] instanceof ConstantExpressionExecutor) || attributeExpressionExecutors[3]
+                .getReturnType() != Attribute.Type.STRING) {
+            throw new SiddhiAppValidationException("Invalid parameter type found for the 4th argument " +
+                    "of KernelMinMaxStreamProcessor, " +
+                    "required " + Attribute.Type.STRING + " constant, but found " + attributeExpressionExecutors[2]
+                    .getReturnType().toString());
         }
 
         variablePosition = ((VariableExpressionExecutor) attributeExpressionExecutors[0]).getPosition();
-        windowSize = Integer.parseInt(String.valueOf(((ConstantExpressionExecutor) attributeExpressionExecutors[2]).getValue()));
+        windowSize = Integer.parseInt(String.valueOf(((ConstantExpressionExecutor) attributeExpressionExecutors[2])
+                .getValue()));
         String extremeType = (String) ((ConstantExpressionExecutor) attributeExpressionExecutors[3]).getValue();
 
         if ("min".equalsIgnoreCase(extremeType)) {
@@ -110,7 +143,8 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
     }
 
     @Override
-    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor, StreamEventCloner streamEventCloner,
+    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
+                           StreamEventCloner streamEventCloner,
                            ComplexEventPopulater complexEventPopulater) {
         ComplexEventChunk<StreamEvent> returnEventChunk = new ComplexEventChunk<StreamEvent>(false);
         synchronized (this) {
@@ -202,7 +236,8 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
 
     private StreamEvent getExtremaEvent(Integer smoothenedPosition, Integer eventPosition) {
         //values 5 and 3 are optimized values for stock market domain, these value may change for other domains
-        if (eventPosition != null && eventPosition - smoothenedPosition <= windowSize / 5 && smoothenedPosition - eventPosition <= windowSize / 2) {
+        if (eventPosition != null && eventPosition - smoothenedPosition <= windowSize / 5 &&
+                smoothenedPosition - eventPosition <= windowSize / 2) {
             StreamEvent extremaEvent = eventStack.get(eventPosition);
             if (!uniqueQueue.contains(extremaEvent)) {
                 //value 5 is an optimized value for stock market domain, this value may change for other domains
@@ -229,14 +264,26 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
     }
 
     @Override
-    public Object[] currentState() {
-        return new Object[]{eventStack, valueStack, uniqueQueue};
+    public synchronized Map<String, Object> currentState() {
+        Map<String, Object> state = new HashMap<String, Object>();
+        state.put("eventStack", eventStack);
+        state.put("valueStack", valueStack);
+        state.put("uniqueQueue", uniqueQueue);
+
+        return state;
     }
 
     @Override
-    public void restoreState(Object[] state) {
-        eventStack = (LinkedList<StreamEvent>) state[0];
-        valueStack = (Queue<Double>) state[1];
-        uniqueQueue = (Queue<StreamEvent>) state[2];
+    public synchronized void restoreState(Map<String, Object> state) {
+        eventStack = (LinkedList<StreamEvent>) state.get("eventStack");
+        valueStack = (Queue<Double>) state.get("valueStack");
+        uniqueQueue = (Queue<StreamEvent>) state.get("uniqueQueue");
+    }
+
+    /**
+     * Enumeration for extrema types.
+     */
+    public enum ExtremaType {
+        MIN, MAX, MINMAX
     }
 }

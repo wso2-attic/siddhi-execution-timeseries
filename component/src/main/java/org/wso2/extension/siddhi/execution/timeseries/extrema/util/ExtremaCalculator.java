@@ -23,21 +23,24 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Implementation of Extrema Calculator for siddhiQL.
+ */
 public class ExtremaCalculator {
 
     private double bw = 0; // bandwidth
     private double[] kernelValues = null;
 
-    private double Q = 0.000001; //standard deviation of the process noise
-    private double R = 0.0001;   //standard deviation of the measurement noise
-    private double P = 1;        //prior error covariance
-    private double X = 0;        //prior estimate
-    private double K;            //Kalman Gain
+    private double q = 0.000001; //standard deviation of the process noise
+    private double r = 0.0001;   //standard deviation of the measurement noise
+    private double p = 1;        //prior error covariance
+    private double priorEstimate = 0;        //prior estimate
+    private double kalmanGain;            //Kalman Gain
 
 
-    public ExtremaCalculator(double Q, double R) {
-        this.Q = Q;
-        this.R = R;
+    public ExtremaCalculator(double q, double r) {
+        this.q = q;
+        this.r = r;
     }
 
     public ExtremaCalculator() {
@@ -45,7 +48,7 @@ public class ExtremaCalculator {
     }
 
     /**
-     * @param x X value for calculate Gaussian Kernel
+     * @param x priorEstimate value for calculate Gaussian Kernel
      * @return Double value of calculated Gaussian kernel
      */
     private Double gaussianKernel(int x) {
@@ -105,7 +108,7 @@ public class ExtremaCalculator {
     }
 
     /**
-     * Finds maximum Local value of a Queue uses rule based approach
+     * Finds maximum Local value of a Queue uses rule based approach.
      *
      * @param input     queue
      * @param bandwidth Considering neighborhood
@@ -130,7 +133,7 @@ public class ExtremaCalculator {
     }
 
     /**
-     * Finds minimum Local value of a Queue uses rule based approach
+     * Finds minimum Local value of a Queue uses rule based approach.
      *
      * @param input     queue
      * @param bandwidth Considering neighborhood
@@ -214,14 +217,14 @@ public class ExtremaCalculator {
 
     // Kalman filter
     private void measurementUpdate() {
-        K = (P + Q) / (P + Q + R);
-        P = R * (P + Q) / (R + P + Q);
+        kalmanGain = (p + q) / (p + q + r);
+        p = r * (p + q) / (r + p + q);
     }
 
     public double update(double measurement) {
         measurementUpdate();
-        double result = X + (measurement - X) * K;
-        X = result;
+        double result = priorEstimate + (measurement - priorEstimate) * kalmanGain;
+        priorEstimate = result;
         return result;
     }
 
