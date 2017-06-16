@@ -18,24 +18,28 @@
 
 package org.wso2.extension.siddhi.execution.timeseries;
 
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.wso2.siddhi.core.ExecutionPlanRuntime;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
 
+
+/**
+ * Tests for Kernel Extension.
+ */
 public class KernelExtensionTestCase {
 
-    static final Logger log = Logger.getLogger(KernelExtensionTestCase.class);
+    static final Logger LOG = Logger.getLogger(KernelExtensionTestCase.class);
     private volatile int count;
     private volatile boolean eventArrived;
 
-    @Before
+    @BeforeMethod
     public void init() {
         count = 0;
         eventArrived = false;
@@ -43,16 +47,16 @@ public class KernelExtensionTestCase {
 
     @Test
     public void testKernelMaxStreamProcessorExtension() throws InterruptedException {
-        log.info("KernelMaxExtension TestCase");
+        LOG.info("KernelMaxExtension TestCase");
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "define stream inputStream (price double);";
         String query = ("@info(name = 'query1') from inputStream#timeseries:kernelMinMax(price, 4, 17, 'max') " +
                 "select *" +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -89,8 +93,8 @@ public class KernelExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{51.7d});
         inputHandler.send(new Object[]{51.07d});
@@ -195,13 +199,13 @@ public class KernelExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(7, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 
     @Test
     public void testKernelMinMaxStreamProcessorExtension() throws InterruptedException {
-        log.info("KernelMinMaxExtension TestCase");
+        LOG.info("KernelMinMaxExtension TestCase");
 
         SiddhiManager siddhiManager = new SiddhiManager();
 
@@ -209,9 +213,9 @@ public class KernelExtensionTestCase {
         String query = ("@info(name = 'query1') from inputStream#timeseries:kernelMinMax(price, 3 , 16, 'minmax') " +
                 "select price, extremaType , id " +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -278,8 +282,8 @@ public class KernelExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{1, 51.7d});
         inputHandler.send(new Object[]{2, 51.07d});
@@ -384,22 +388,22 @@ public class KernelExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(13, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 
     @Test
     public void testKernelMinStreamProcessorExtension() throws InterruptedException {
-        log.info("KernelMinExtension TestCase");
+        LOG.info("KernelMinExtension TestCase");
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "define stream inputStream (price double);";
         String query = ("@info(name = 'query1') from inputStream#timeseries:kernelMinMax(price, 4, 16, 'min') " +
                 "select *" +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -429,8 +433,8 @@ public class KernelExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{51.7d});
         inputHandler.send(new Object[]{51.07d});
@@ -536,7 +540,7 @@ public class KernelExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(5, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 

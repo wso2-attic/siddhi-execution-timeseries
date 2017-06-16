@@ -18,23 +18,26 @@
 
 package org.wso2.extension.siddhi.execution.timeseries;
 
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.wso2.siddhi.core.ExecutionPlanRuntime;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
 
+/**
+ * Tests for Kalman Extension.
+ */
 public class KalmanExtensionTestCase {
-    static final Logger log = Logger.getLogger(KalmanExtensionTestCase.class);
+    static final Logger LOG = Logger.getLogger(KalmanExtensionTestCase.class);
     private volatile int count;
     private volatile boolean eventArrived;
 
-    @Before
+    @BeforeMethod
     public void init() {
         count = 0;
         eventArrived = false;
@@ -42,16 +45,17 @@ public class KalmanExtensionTestCase {
 
     @Test
     public void testKalmanMinStreamProcessorExtension() throws InterruptedException {
-        log.info("KalmanMin TestCase");
+        LOG.info("KalmanMin TestCase");
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "define stream inputStream (id int ,price double);";
-        String query = ("@info(name = 'query1') from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')  " +
+        String query = ("@info(name = 'query1') " +
+                "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')  " +
                 "select price, extremaType, id " +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -72,8 +76,8 @@ public class KalmanExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{1, 51.7d});
         inputHandler.send(new Object[]{2, 51.07d});
@@ -178,22 +182,23 @@ public class KalmanExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(2, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 
     @Test
     public void testKalmanMaxStreamProcessorExtension() throws InterruptedException {
-        log.info("KalmanMax TestCase");
+        LOG.info("KalmanMax TestCase");
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "define stream inputStream (id int, price double);";
-        String query = ("@info(name = 'query1') from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')  " +
+        String query = ("@info(name = 'query1') " +
+                "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')  " +
                 "select price, extremaType, id " +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -217,8 +222,8 @@ public class KalmanExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{1, 51.7d});
         inputHandler.send(new Object[]{2, 51.07d});
@@ -324,22 +329,23 @@ public class KalmanExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(3, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 
     @Test
     public void testKalmanMinMaxStreamProcessorExtension() throws InterruptedException {
-        log.info("KalmanMinMax TestCase");
+        LOG.info("KalmanMinMax TestCase");
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inStreamDefinition = "define stream inputStream (id int , price double);";
-        String query = ("@info(name = 'query1') from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')  " +
+        String query = ("@info(name = 'query1') " +
+                "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')  " +
                 "select price, extremaType, id " +
                 "insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition + query);
 
-        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
@@ -374,8 +380,8 @@ public class KalmanExtensionTestCase {
             }
         });
 
-        InputHandler inputHandler = executionPlanRuntime.getInputHandler("inputStream");
-        executionPlanRuntime.start();
+        InputHandler inputHandler = siddhiAppRuntime.getInputHandler("inputStream");
+        siddhiAppRuntime.start();
 
         inputHandler.send(new Object[]{1, 51.7d});
         inputHandler.send(new Object[]{2, 51.07d});
@@ -480,7 +486,7 @@ public class KalmanExtensionTestCase {
         Thread.sleep(1000);
         Assert.assertEquals(5, count);
         Assert.assertTrue(eventArrived);
-        executionPlanRuntime.shutdown();
+        siddhiAppRuntime.shutdown();
 
     }
 

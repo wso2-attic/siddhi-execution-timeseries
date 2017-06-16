@@ -20,22 +20,22 @@ package org.wso2.extension.siddhi.execution.timeseries.linreg;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-/*
- * Abstract class for regression calculation
+/**
+ * Abstract class for regression calculation.
  */
-public abstract  class LengthTimeRegressionCalculator {
+public abstract class LengthTimeRegressionCalculator {
     protected long duration;
     protected int batchSize;
     protected int calcInterval = 1;
     protected double confidenceInterval = 0.95;
     protected int eventCount = 0;
     protected int xParameterCount = 0;
-    protected int incCounter =0;
+    protected int incCounter = 0;
     protected long currentEventTime;
     protected Queue<Long> expiryTimeList = new PriorityQueue<Long>();
 
     /**
-     * Constructor
+     * Constructor for LengthTimeRegressionCalculator.
      *
      * @param paramCount   Number of X variables + 1 (Y variable)
      * @param timeWindow   Time window which is used to constrain number of events
@@ -49,11 +49,11 @@ public abstract  class LengthTimeRegressionCalculator {
         batchSize = lengthWindow;
         calcInterval = calcInt;
         confidenceInterval = ci;
-        xParameterCount = paramCount -1;
+        xParameterCount = paramCount - 1;
     }
 
     /**
-     * Abstract method for accumulating events
+     * Abstract method for accumulating events.
      *
      * @param data       Array which holds Y and X values
      * @param expiryTime Time at which each event should expire (based on time window)
@@ -61,18 +61,19 @@ public abstract  class LengthTimeRegressionCalculator {
     protected abstract void addEvent(Object[] data, long expiryTime);
 
     /**
-     * Abstract method for removing events which have expired based on time and/or length
+     * Abstract method for removing events which have expired based on time and/or length.
      */
     protected abstract void removeExpiredEvents();
 
     /**
-     * Abstract method for performing linear regression
+     * Abstract method for performing linear regression.
+     *
      * @return Array containing standard error and beta values
      */
     protected abstract Object[] processData();
 
     /**
-     * Method which returns linear regression results
+     * Method which returns linear regression results.
      *
      * @param data       Array which holds Y and X values
      * @param expiryTime Time at which each event should expire (based on time window)
@@ -82,9 +83,9 @@ public abstract  class LengthTimeRegressionCalculator {
         addEvent(data, expiryTime);
         removeExpiredEvents();
         // processing at a user specified calculation interval
-        if(incCounter % calcInterval != 0){
+        if (incCounter % calcInterval != 0) {
             return null;
         }
-        return  processData();
+        return processData();
     }
 }

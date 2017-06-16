@@ -18,12 +18,13 @@
 
 package org.wso2.extension.siddhi.execution.timeseries.linreg;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.apache.commons.math3.distribution.TDistribution;
 
-/*
- * This class handles simple linear regression in real time
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * This class handles simple linear regression in real time.
  * Simple linear regression concerns single dependent variable (Y) and single independent variable (X)
  */
 public class LengthTimeSimpleLinearRegressionCalculator extends
@@ -35,7 +36,7 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
     private double sumXsquared = 0.0;
 
     /**
-     * This method calls the constructor of super class
+     * This method calls the constructor of super class.
      *
      * @param paramCount   Number of X variables + 1 (Y variable)
      * @param timeWindow   Time window which is used to constrain number of events
@@ -49,7 +50,7 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
     }
 
     /**
-     * Method to accumulate new events: dependent (Y) and independent (X) variable values
+     * Method to accumulate new events: dependent (Y) and independent (X) variable values.
      *
      * @param data       Array which holds Y and X values
      * @param expiryTime Time at which each event should expire (based on time window)
@@ -70,7 +71,7 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
     }
 
     /**
-     * Method to remove events which have expired based on time and/or length
+     * Method to remove events which have expired based on time and/or length.
      */
     @Override
     protected void removeExpiredEvents() {
@@ -95,61 +96,58 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
     }
 
     /**
-     * Method which performs simple linear regression
+     * Method which performs simple linear regression.
      *
      * @return Array containing standard error and beta values
      */
     @Override
     protected Object[] processData() {
         Object[] regResult;
-        try {
-            Double[] xArray = xValueList.toArray(new Double[eventCount]);
-            Double[] yArray = yValueList.toArray(new Double[eventCount]);
-            double meanX, meanY, varianceX = 0.0, varianceY = 0.0, covarXY = 0.0, beta1, beta0, R2,
-                    stderr, beta1err, beta0err, tBeta0, tBeta1, fit;
-            double resss = 0.0; // residual sum of squares
-            // double regss = 0.0; // regression sum of squares [Required to calculate R2]
-            int df = eventCount - 2; // degrees of freedom (n-k-1)
-            TDistribution t = new TDistribution(df);
-            // compute meanX and meanY
-            meanX = sumX / eventCount;
-            meanY = sumY / eventCount;
-            // compute summary statistics
-            for (int i = 0; i < eventCount; i++) {
-                varianceX += (xArray[i] - meanX) * (xArray[i] - meanX);
-                // varianceY += (yArray[i] - meanY) * (yArray[i] - meanY);//Required to calculate R2
-                covarXY += (xArray[i] - meanX) * (yArray[i] - meanY);
-            }
-            // compute coefficients
-            beta1 = covarXY / varianceX;
-            beta0 = meanY - beta1 * meanX;
-            // analyze results
-            for (int i = 0; i < eventCount; i++) {
-                fit = beta1 * xArray[i] + beta0;
-                resss += (fit - yArray[i]) * (fit - yArray[i]);
-                // regss += (fit - meanY) * (fit - meanY); // Required to calculate R2
-            }
-            // R2 = regss / varianceY; // Will calculate only if a customer asks for it
-            // calculating standard errors
-            stderr = Math.sqrt(resss / df);
-            beta1err = stderr / Math.sqrt(varianceX);
-            beta0err = stderr * Math.sqrt(sumXsquared / (eventCount * varianceX));
-            // calculating tstats
-            tBeta0 = beta0 / beta0err;
-            tBeta1 = beta1 / beta1err;
-            // Eliminating weak coefficients
-            double pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tBeta0)));
-            if (pValue > (1 - confidenceInterval)) {
-                beta0 = 0;
-            }
-            pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tBeta1)));
-            if (pValue > (1 - confidenceInterval)) {
-                beta1 = 0;
-            }
-            regResult = new Object[] { stderr, beta0, beta1 };
-        } catch (Exception e) {
-            regResult = new Object[] { 0.0, 0.0, 0.0 };
+        Double[] xArray = xValueList.toArray(new Double[eventCount]);
+        Double[] yArray = yValueList.toArray(new Double[eventCount]);
+        double meanX, meanY, varianceX = 0.0, varianceY = 0.0, covarXY = 0.0, beta1, beta0, r2,
+                stderr, beta1err, beta0err, tBeta0, tBeta1, fit;
+        double resss = 0.0; // residual sum of squares
+        // double regss = 0.0; // regression sum of squares [Required to calculate r2]
+        int df = eventCount - 2; // degrees of freedom (n-k-1)
+        TDistribution t = new TDistribution(df);
+        // compute meanX and meanY
+        meanX = sumX / eventCount;
+        meanY = sumY / eventCount;
+        // compute summary statistics
+        for (int i = 0; i < eventCount; i++) {
+            varianceX += (xArray[i] - meanX) * (xArray[i] - meanX);
+            // varianceY += (yArray[i] - meanY) * (yArray[i] - meanY);//Required to calculate r2
+            covarXY += (xArray[i] - meanX) * (yArray[i] - meanY);
         }
+        // compute coefficients
+        beta1 = covarXY / varianceX;
+        beta0 = meanY - beta1 * meanX;
+        // analyze results
+        for (int i = 0; i < eventCount; i++) {
+            fit = beta1 * xArray[i] + beta0;
+            resss += (fit - yArray[i]) * (fit - yArray[i]);
+            // regss += (fit - meanY) * (fit - meanY); // Required to calculate r2
+        }
+        // r2 = regss / varianceY; // Will calculate only if a customer asks for it
+        // calculating standard errors
+        stderr = Math.sqrt(resss / df);
+        beta1err = stderr / Math.sqrt(varianceX);
+        beta0err = stderr * Math.sqrt(sumXsquared / (eventCount * varianceX));
+        // calculating tstats
+        tBeta0 = beta0 / beta0err;
+        tBeta1 = beta1 / beta1err;
+        // Eliminating weak coefficients
+        double pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tBeta0)));
+        if (pValue > (1 - confidenceInterval)) {
+            beta0 = 0;
+        }
+        pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tBeta1)));
+        if (pValue > (1 - confidenceInterval)) {
+            beta1 = 0;
+        }
+        regResult = new Object[]{stderr, beta0, beta1};
+
         return regResult;
     }
 }
