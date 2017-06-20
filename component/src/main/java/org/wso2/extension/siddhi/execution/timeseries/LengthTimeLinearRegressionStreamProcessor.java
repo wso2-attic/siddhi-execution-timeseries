@@ -22,6 +22,8 @@ import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressio
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -49,12 +51,48 @@ import java.util.Map;
 @Extension(
         name = "lengthTimeRegress",
         namespace = "timeseries",
-        description = "TBD",
-        parameters = {},
+        description = "This allows user to specify the time window and batch size (required). " +
+                "The number of events considered for the regression calculation can be restricted based" +
+                " on the time window and/or the batch size.",
+        parameters = {
+                @Parameter(name = "time.window",
+                        description = "The maximum time duration to be considered for the regression calculation.",
+                        type = {DataType.LONG}),
+                @Parameter(name = "batch.size",
+                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "1000000000"),
+                @Parameter(name = "calculation.interval",
+                        description = "The frequency with which the regression calculation should be carried out.",
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "1"),
+                @Parameter(name = "confidence.interval",
+                        description = "The confidence interval to be used for a regression calculation.",
+                        optional = true,
+                        defaultValue = "0.95",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "y.stream",
+                        description = "The data stream of the dependent variable.",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "x.stream",
+                        description = "The data stream(s) of the independent variable.",
+                        type = {DataType.DOUBLE})
+        },
         examples = {
                 @Example(
-                        syntax = "TBD",
-                        description =  "TBD"
+                        syntax = "from StockExchangeStream#timeseries:lengthTimeRegress(200, 10000, 2, 0.95, Y, X)\n" +
+                                "select *\n" +
+                                "insert into StockForecaster;",
+                        description =  "This  query submits" +
+                                " a time window (200 milliseconds)," +
+                                " a batch size (10,000 events)," +
+                                " a calculation interval (every 2 events)," +
+                                " a confidence interval (0.95)," +
+                                " a dependent input stream (Y) and" +
+                                " an independent input stream (X) that are used to perform linear regression" +
+                                " between Y and all the X streams."
                 )
         }
 )

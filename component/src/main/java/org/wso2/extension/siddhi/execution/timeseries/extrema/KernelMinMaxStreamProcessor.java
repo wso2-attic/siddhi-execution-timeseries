@@ -22,6 +22,8 @@ package org.wso2.extension.siddhi.execution.timeseries.extrema;
 import org.wso2.extension.siddhi.execution.timeseries.extrema.util.ExtremaCalculator;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -52,11 +54,40 @@ import java.util.Queue;
         name = "kernelMinMax",
         namespace = "timeseries",
         description = "TBD",
-        parameters = {},
+        parameters = {
+                @Parameter(name = "variable",
+                        description = "The time series value to be considered for minima maxima detection.",
+                        type = {DataType.DOUBLE, DataType.FLOAT, DataType.INT, DataType.LONG}),
+                @Parameter(name = "bandwidth",
+                        description = "The bandwidth of the Gaussian Kernel calculation.",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "window.size",
+                        description = "The number of values to be considered for smoothing and" +
+                                " determining the extremes.",
+                        type = {DataType.INT}),
+                @Parameter(name = "extrema.type",
+                        description = "This can be min, max or minmax.",
+                        type = {DataType.STRING}),
+        },
         examples = {
                 @Example(
-                        syntax = "TBD",
-                        description =  "TBD"
+                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘min’)\n" +
+                                "select *\n" +
+                                "insert into outputStream;",
+                        description =  "This example returns the maximum values for a set of price values."
+                ),
+                @Example(
+                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, 'max')\n" +
+                                "select *\n" +
+                                "insert into outputStream;",
+                        description =  "This example returns the minimum values for a set of price values."
+                ),
+                @Example(
+                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘minmax’)\n" +
+                                "select *\n" +
+                                "insert into outputStream;",
+                        description =  "This example returns both the minimum values and the maximum values for a " +
+                                "set of price values."
                 )
         }
 )

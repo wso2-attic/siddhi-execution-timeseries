@@ -21,6 +21,8 @@ import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressio
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -48,12 +50,46 @@ import java.util.Map;
 @Extension(
         name = "lengthTimeOutlier",
         namespace = "timeseries",
-        description = "TBD",
-        parameters = {},
+        description = "This allows user to restrict the number of events considered for the regression calculation " +
+                "performed when finding outliers based on a specified time window and/or a batch size.",
+        parameters = {
+                @Parameter(name = "time.window",
+                        description = "The maximum time duration that should be considered for " +
+                                "a regression calculation.",
+                        type = {DataType.LONG}),
+                @Parameter(name = "batch.size",
+                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        type = {DataType.INT}),
+                @Parameter(name = "range",
+                        description = "The number of standard deviations from the regression calculation.",
+                        type = {DataType.INT, DataType.LONG}),
+                @Parameter(name = "calculation.interval",
+                        description = "The frequency with which the regression calculation should be carried out.",
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "1"),
+                @Parameter(name = "confidence.interval",
+                        description = "The confidence interval to be used for a regression calculation.",
+                        optional = true,
+                        defaultValue = "0.95",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "y.stream",
+                        description = "The data stream of the dependent variable.",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "x.stream",
+                        description = "The data stream of the independent variable.",
+                        type = {DataType.DOUBLE})
+        },
         examples = {
                 @Example(
-                        syntax = "TBD",
-                        description =  "TBD"
+                        syntax = "from StockExchangeStream#timeseries:lengthTimeOutlier(2 sec, 100, 2, Y, X)\n" +
+                                "select *\n" +
+                                "insert into StockForecaster;",
+                        description =  "This query submits a time window (2 seconds), a batch size (100 events)," +
+                                " the number of standard deviations to be used as a range (2)," +
+                                " a dependent input stream (Y) and an independent input stream (X)," +
+                                " that are used to perform linear regression between Y and X." +
+                                " It returns an output that indicates whether the current event is an outlier or not."
                 )
         }
 )
