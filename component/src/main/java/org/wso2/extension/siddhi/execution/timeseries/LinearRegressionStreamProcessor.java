@@ -23,6 +23,8 @@ import org.wso2.extension.siddhi.execution.timeseries.linreg.RegressionCalculato
 import org.wso2.extension.siddhi.execution.timeseries.linreg.SimpleLinearRegressionCalculator;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEvent;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
@@ -54,12 +56,41 @@ import java.util.Map;
 @Extension(
         name = "regress",
         namespace = "timeseries",
-        description = "TBD",
-        parameters = {},
+        description = "This allows user to specify the batch size (optional) that defines the number of events" +
+                " to be considered for the calculation of regression.",
+        parameters = {
+                @Parameter(name = "calculation.interval",
+                        description = "The frequency with which the regression calculation should be carried out.",
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "1"),
+                @Parameter(name = "batch.size",
+                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "1000000000"),
+                @Parameter(name = "confidence.interval",
+                        description = "The confidence interval to be used for a regression calculation.",
+                        optional = true,
+                        defaultValue = "0.95",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "y.stream",
+                        description = "The data stream of the dependent variable.",
+                        type = {DataType.DOUBLE}),
+                @Parameter(name = "x.stream",
+                        description = "The data stream(s) of the independent variable.",
+                        type = {DataType.DOUBLE})
+        },
         examples = {
                 @Example(
-                        syntax = "TBD",
-                        description =  "TBD"
+                        syntax = "from StockExchangeStream#timeseries:regress(10, 100000, 0.95, Y, X1, X2, X3)\n" +
+                                "select *\n" +
+                                "insert into StockForecaster",
+                        description =  "This  query submits a calculation interval (every 10 events)," +
+                                " a batch size (100,000 events), a confidence interval (0.95)," +
+                                " a dependent input stream (Y) and" +
+                                " 3 independent input streams (X1, X2, X3) that are used to perform linear regression" +
+                                " between Y and all the X streams."
                 )
         }
 )
