@@ -52,6 +52,8 @@
         <commons-math3.version>3.2</commons-math3.version>
         <jama.version>1.0.3</jama.version>
         <testng.version>6.8</testng.version>
+        <siddhi.execution.math.version>4.0.0</siddhi.execution.math.version>
+        <siddhi.execution.time.version>4.0.1</siddhi.execution.time.version>
 
         <mavan.findbugsplugin.exclude.file>findbugs-exclude.xml</mavan.findbugsplugin.exclude.file>
         <mavan.checkstyle.suppression.file>checkstyle-suppressions.xml</mavan.checkstyle.suppression.file>
@@ -76,6 +78,16 @@
                 <groupId>org.wso2.siddhi</groupId>
                 <artifactId>siddhi-query-api</artifactId>
                 <version>${siddhi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.extension.siddhi.execution.math</groupId>
+                <artifactId>siddhi-execution-math</artifactId>
+                <version>${siddhi.execution.math.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.extension.siddhi.execution.time</groupId>
+                <artifactId>siddhi-execution-time</artifactId>
+                <version>${siddhi.execution.time.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.log4j.wso2</groupId>
@@ -162,6 +174,16 @@
                     <encoding>UTF-8</encoding>
                     <source>1.6</source>
                     <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testing.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
         </plugins>
