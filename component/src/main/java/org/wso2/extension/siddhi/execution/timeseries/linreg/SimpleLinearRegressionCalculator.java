@@ -18,6 +18,7 @@
 package org.wso2.extension.siddhi.execution.timeseries.linreg;
 
 import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -65,61 +66,65 @@ public class SimpleLinearRegressionCalculator extends RegressionCalculator {
     protected Object[] processData() {
 
         Object[] regResult;
-        Double[] xArray = xValueList.toArray(new Double[eventCount]);
-        Double[] yArray = yValueList.toArray(new Double[eventCount]);
+        try {
+            Double[] xArray = xValueList.toArray(new Double[eventCount]);
+            Double[] yArray = yValueList.toArray(new Double[eventCount]);
 
-        double meanX, meanY, varianceX = 0.0, varianceY = 0.0, covarXY = 0.0, beta1, beta0, r2,
-                stderr, beta1err, beta0err, tbeta0, tbeta1, fit;
+            double meanX, meanY, varianceX = 0.0, varianceY = 0.0, covarXY = 0.0, beta1, beta0, r2,
+                    stderr, beta1err, beta0err, tbeta0, tbeta1, fit;
 
-        double resss = 0.0;      // residual sum of squares
-        // double regss = 0.0;      // regression sum of squares [Required to calculate r2]
-        int df = eventCount - 2; // degrees of freedom (n-k-1)
-        TDistribution t = new TDistribution(df);
+            double resss = 0.0;      // residual sum of squares
+            // double regss = 0.0;      // regression sum of squares [Required to calculate r2]
+            int df = eventCount - 2; // degrees of freedom (n-k-1)
+            TDistribution t = new TDistribution(df);
 
-        //  compute meanX and meanY
-        meanX = sumX / eventCount;
-        meanY = sumY / eventCount;
+            //  compute meanX and meanY
+            meanX = sumX / eventCount;
+            meanY = sumY / eventCount;
 
-        // compute summary statistics
-        for (int i = 0; i < eventCount; i++) {
-            varianceX += (xArray[i] - meanX) * (xArray[i] - meanX);
-            // varianceY += (yArray[i] - meanY) * (yArray[i] - meanY);  // Required to calculate r2
-            covarXY += (xArray[i] - meanX) * (yArray[i] - meanY);
+            // compute summary statistics
+            for (int i = 0; i < eventCount; i++) {
+                varianceX += (xArray[i] - meanX) * (xArray[i] - meanX);
+                // varianceY += (yArray[i] - meanY) * (yArray[i] - meanY);  // Required to calculate r2
+                covarXY += (xArray[i] - meanX) * (yArray[i] - meanY);
+            }
+
+
+            //compute coefficients
+            beta1 = covarXY / varianceX;
+            beta0 = meanY - beta1 * meanX;
+
+            // analyze results
+            for (int i = 0; i < eventCount; i++) {
+                fit = beta1 * xArray[i] + beta0;
+                resss += (fit - yArray[i]) * (fit - yArray[i]);
+                // regss += (fit - meanY) * (fit - meanY);  // Required to calculate r2
+            }
+
+            // r2 = regss / varianceY;  // Will calculate only if a customer asks for it
+            //calculating standard errors
+            stderr = Math.sqrt(resss / df);
+            beta1err = stderr / Math.sqrt(varianceX);
+            beta0err = stderr * Math.sqrt(sumXsquared / (eventCount * varianceX));
+
+            //calculating tstats
+            tbeta0 = beta0 / beta0err;
+            tbeta1 = beta1 / beta1err;
+
+            // Eliminating weak coefficients
+            double pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tbeta0)));
+            if (pValue > (1 - confidenceInterval)) {
+                beta0 = 0;
+            }
+            pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tbeta1)));
+            if (pValue > (1 - confidenceInterval)) {
+                beta1 = 0;
+            }
+
+            regResult = new Object[]{stderr, beta0, beta1};
+        } catch (NotStrictlyPositiveException e) {
+            regResult = new Object[]{0.0, 0.0, 0.0};
         }
-
-
-        //compute coefficients
-        beta1 = covarXY / varianceX;
-        beta0 = meanY - beta1 * meanX;
-
-        // analyze results
-        for (int i = 0; i < eventCount; i++) {
-            fit = beta1 * xArray[i] + beta0;
-            resss += (fit - yArray[i]) * (fit - yArray[i]);
-            // regss += (fit - meanY) * (fit - meanY);  // Required to calculate r2
-        }
-
-        // r2 = regss / varianceY;  // Will calculate only if a customer asks for it
-        //calculating standard errors
-        stderr = Math.sqrt(resss / df);
-        beta1err = stderr / Math.sqrt(varianceX);
-        beta0err = stderr * Math.sqrt(sumXsquared / (eventCount * varianceX));
-
-        //calculating tstats
-        tbeta0 = beta0 / beta0err;
-        tbeta1 = beta1 / beta1err;
-
-        // Eliminating weak coefficients
-        double pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tbeta0)));
-        if (pValue > (1 - confidenceInterval)) {
-            beta0 = 0;
-        }
-        pValue = 2 * (1 - t.cumulativeProbability(Math.abs(tbeta1)));
-        if (pValue > (1 - confidenceInterval)) {
-            beta1 = 0;
-        }
-
-        regResult = new Object[]{stderr, beta0, beta1};
         return regResult;
     }
 }
