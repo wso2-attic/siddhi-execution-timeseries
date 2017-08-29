@@ -28,6 +28,9 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
+import org.wso2.siddhi.core.util.SiddhiTestHelper;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -36,12 +39,14 @@ import org.wso2.siddhi.core.util.EventPrinter;
 public class KernelExtensionTestCase {
 
     static final Logger LOG = Logger.getLogger(KernelExtensionTestCase.class);
-    private volatile int count;
+    private int waitTime = 2000;
+    private int timeout = 30000;
+    private AtomicInteger count = new AtomicInteger();
     private volatile boolean eventArrived;
 
     @BeforeMethod
     public void init() {
-        count = 0;
+        count.set(0);
         eventArrived = false;
     }
 
@@ -62,8 +67,8 @@ public class KernelExtensionTestCase {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 eventArrived = true;
                 for (Event event : inEvents) {
-                    count++;
-                    switch (count) {
+                    count.incrementAndGet();
+                    switch (count.get()) {
                         case 1:
                             Assert.assertEquals(54.0, event.getData(0));
                             break;
@@ -86,7 +91,7 @@ public class KernelExtensionTestCase {
                             Assert.assertEquals(50.3, event.getData(0));
                             break;
                         default:
-                            org.junit.Assert.fail();
+                            Assert.fail();
 
                     }
                 }
@@ -196,8 +201,8 @@ public class KernelExtensionTestCase {
         inputHandler.send(new Object[]{49d});
         inputHandler.send(new Object[]{48.35d});
 
-        Thread.sleep(1000);
-        Assert.assertEquals(7, count);
+        SiddhiTestHelper.waitForEvents(waitTime, 7, count, timeout);
+        Assert.assertEquals(7, count.get());
         Assert.assertTrue(eventArrived);
         siddhiAppRuntime.shutdown();
 
@@ -221,8 +226,8 @@ public class KernelExtensionTestCase {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 eventArrived = true;
                 for (Event event : inEvents) {
-                    count++;
-                    switch (count) {
+                    count.incrementAndGet();
+                    switch (count.get()) {
                         case 1:
                             Assert.assertEquals(54.0, event.getData(0));
                             Assert.assertEquals("max", event.getData()[1]);
@@ -276,7 +281,7 @@ public class KernelExtensionTestCase {
                             Assert.assertEquals("max", event.getData()[1]);
                             break;
                         default:
-                            org.junit.Assert.fail();
+                            Assert.fail();
                     }
                 }
             }
@@ -385,8 +390,8 @@ public class KernelExtensionTestCase {
         inputHandler.send(new Object[]{98, 49d});
         inputHandler.send(new Object[]{99, 48.35d});
 
-        Thread.sleep(1000);
-        Assert.assertEquals(13, count);
+        SiddhiTestHelper.waitForEvents(waitTime, 13, count, timeout);
+        Assert.assertEquals(13, count.get());
         Assert.assertTrue(eventArrived);
         siddhiAppRuntime.shutdown();
 
@@ -409,8 +414,8 @@ public class KernelExtensionTestCase {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 eventArrived = true;
                 for (Event event : inEvents) {
-                    count++;
-                    switch (count) {
+                    count.incrementAndGet();
+                    switch (count.get()) {
                         case 1:
                             Assert.assertEquals(50.35, event.getData(0));
                             break;
@@ -427,7 +432,7 @@ public class KernelExtensionTestCase {
                             Assert.assertEquals(48.5, event.getData(0));
                             break;
                         default:
-                            org.junit.Assert.fail();
+                            Assert.fail();
                     }
                 }
             }
@@ -537,8 +542,8 @@ public class KernelExtensionTestCase {
         inputHandler.send(new Object[]{48.35d});
 
 
-        Thread.sleep(1000);
-        Assert.assertEquals(5, count);
+        SiddhiTestHelper.waitForEvents(waitTime, 5, count, timeout);
+        Assert.assertEquals(5, count.get());
         Assert.assertTrue(eventArrived);
         siddhiAppRuntime.shutdown();
 

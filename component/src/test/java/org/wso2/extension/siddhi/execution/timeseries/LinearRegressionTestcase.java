@@ -28,6 +28,9 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
+import org.wso2.siddhi.core.util.SiddhiTestHelper;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests for regress Extension.
@@ -35,13 +38,14 @@ import org.wso2.siddhi.core.util.EventPrinter;
 public class LinearRegressionTestcase {
     static final Logger LOGGER = Logger.getLogger(LinearRegressionTestcase.class);
     protected static SiddhiManager siddhiManager;
-    private int count;
-    private double betaZero, betaTwo, forecastY;
+    private AtomicInteger count = new AtomicInteger();
+    private int waitTime = 2000;
+    private int timeout = 30000;    private double betaZero, betaTwo, forecastY;
     private boolean outlier;
 
     @BeforeMethod
     public void init() {
-        count = 0;
+        count.set(0);
     }
 
     @Test
@@ -61,7 +65,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 betaZero = (Double) inEvents[inEvents.length - 1].getData(3);
             }
         });
@@ -120,9 +124,9 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{250.00, 1.00});
         inputHandler.send(new Object[]{200.00, 13.00});
         inputHandler.send(new Object[]{180.00, 6.00});
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 50, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 50, count);
+        AssertJUnit.assertEquals("No of events: ", 50, count.get());
         AssertJUnit.assertEquals("Beta0: ", 573.1418421169493, betaZero, 573.1418421169493 - betaZero);
 
         siddhiAppRuntime.shutdown();
@@ -146,7 +150,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 betaTwo = (Double) inEvents[inEvents.length - 1].getData(8);
             }
         });
@@ -206,9 +210,9 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{200, 50, 31, 73, 3});
         inputHandler.send(new Object[]{180, 21, 17, 26, 8});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 50, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 50, count);
+        AssertJUnit.assertEquals("No of events: ", 50, count.get());
         AssertJUnit.assertEquals("Beta2: ", 26.665526771748596, betaTwo, 26.665526771748596 - betaTwo);
 
         siddhiAppRuntime.shutdown();
@@ -231,7 +235,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 forecastY = (Double) inEvents[inEvents.length - 1].getData(6);
             }
         });
@@ -291,10 +295,10 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{200, "IBM", 13});
         inputHandler.send(new Object[]{180, "GOOG", 6});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 25, count, timeout);
 
         AssertJUnit.assertEquals("Beta0: ", 1250.1106928045238, forecastY, 1250.1106928045238 - forecastY);
-        AssertJUnit.assertEquals("No of events: ", 25, count);
+        AssertJUnit.assertEquals("No of events: ", 25, count.get());
 
         siddhiAppRuntime.shutdown();
 
@@ -317,7 +321,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 outlier = (Boolean) inEvents[inEvents.length - 1].getData(5);
             }
         });
@@ -377,9 +381,9 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{200.00, 13.00});
         inputHandler.send(new Object[]{180.00, 6.00});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 50, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 50, count);
+        AssertJUnit.assertEquals("No of events: ", 50, count.get());
         AssertJUnit.assertEquals(false, outlier);
 
         siddhiAppRuntime.shutdown();
@@ -417,7 +421,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 betaTwo = (Double) inEvents[inEvents.length - 1].getData(5);
             }
         });
@@ -452,9 +456,9 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{4853, 752112000});
         inputHandler.send(new Object[]{9010, 754704000});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 24, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 24, count);
+        AssertJUnit.assertEquals("No of events: ", 24, count.get());
         AssertJUnit.assertEquals("Beta0: ", 3795.7272727272725, betaZero, 3795.7272727272725 - betaZero);
 
         siddhiAppRuntime.shutdown();
@@ -484,7 +488,7 @@ public class LinearRegressionTestcase {
             public void receive(long timeStamp, Event[] inEvents,
                                 Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 betaTwo = (Double) inEvents[inEvents.length - 1].getData(6);
             }
         });
@@ -516,13 +520,11 @@ public class LinearRegressionTestcase {
         inputHandler.send(new Object[]{7.88, 19.00});
         inputHandler.send(new Object[]{7.92, 20.00});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 21, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 21, count);
+        AssertJUnit.assertEquals("No of events: ", 21, count.get());
         AssertJUnit.assertEquals("Beta0: ", 0.996755594843574, betaTwo, 0.996755594843574 - betaTwo);
 
         siddhiAppRuntime.shutdown();
-
     }
-
 }

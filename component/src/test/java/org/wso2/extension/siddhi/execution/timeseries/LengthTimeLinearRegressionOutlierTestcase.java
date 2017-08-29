@@ -28,6 +28,9 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
+import org.wso2.siddhi.core.util.SiddhiTestHelper;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests for lengthTimeOutlier Extension.
@@ -35,12 +38,14 @@ import org.wso2.siddhi.core.util.EventPrinter;
 public class LengthTimeLinearRegressionOutlierTestcase {
     static final Logger LOGGER = Logger.getLogger(LengthTimeLinearRegressionTestcase.class);
     private static SiddhiManager siddhiManager;
-    private int count;
+    private AtomicInteger count = new AtomicInteger();
+    private int waitTime = 2000;
+    private int timeout = 30000;
     private boolean outlier;
 
     @BeforeMethod
     public void init() {
-        count = 0;
+        count.set(0);
     }
 
     @Test
@@ -61,7 +66,7 @@ public class LengthTimeLinearRegressionOutlierTestcase {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 outlier = (Boolean) inEvents[inEvents.length - 1].getData(5);
             }
         });
@@ -122,9 +127,9 @@ public class LengthTimeLinearRegressionOutlierTestcase {
         inputHandler.send(new Object[]{200.00, 13.00});
         inputHandler.send(new Object[]{180.00, 6.00});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 50, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 50, count);
+        AssertJUnit.assertEquals("No of events: ", 50, count.get());
         AssertJUnit.assertEquals(true, outlier);
 
         siddhiAppRuntime.shutdown();
@@ -149,7 +154,7 @@ public class LengthTimeLinearRegressionOutlierTestcase {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
-                count = count + inEvents.length;
+                count.addAndGet(inEvents.length);
                 outlier = (Boolean) inEvents[inEvents.length - 1].getData(5);
             }
         });
@@ -211,9 +216,10 @@ public class LengthTimeLinearRegressionOutlierTestcase {
         inputHandler.send(new Object[]{200.00, 13.00});
         inputHandler.send(new Object[]{180.00, 6.00});
 
-        Thread.sleep(100);
+        SiddhiTestHelper.waitForEvents(waitTime, 50, count, timeout);
 
-        AssertJUnit.assertEquals("No of events: ", 50, count);
+
+        AssertJUnit.assertEquals("No of events: ", 50, count.get());
         AssertJUnit.assertEquals(true, outlier);
 
         siddhiAppRuntime.shutdown();

@@ -1,15 +1,20 @@
-site_name: Siddhi-IO-TCP
+site_name: Siddhi-Execution-Timeseries
 extra_css:
 - stylesheets/extra.css
+extra_javascript:
+- javascripts/extra.js
+site_favicon: images/favicon.ico
 extra:
   logo: images/siddhi-logo-w.svg
   palette:
     primary: teal
     accent: teal
+google_analytics:
+- UA-103065-28
+- auto
 pages:
-- Welcome to WSO2 Siddhi IO TCP: index.md
-- About:
-  - License: about/license.md
-- Api:
+- Welcome to WSO2 Siddhi Execution Timeseries: index.md
+- License: about/license.md
+- API Docs:
   - 4.0.2-SNAPSHOT: api/4.0.2-SNAPSHOT.md
 theme: material
