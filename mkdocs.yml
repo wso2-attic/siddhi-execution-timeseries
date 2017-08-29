@@ -1,4 +1,4 @@
-site_name: Siddhi-IO-TCP
+site_name: Siddhi-Execution-Timeseries
 extra_css:
 - stylesheets/extra.css
 extra_javascript:
