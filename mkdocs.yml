@@ -15,8 +15,6 @@ google_analytics:
 pages:
 - Welcome to WSO2 Siddhi Execution Timeseries: index.md
 - License: about/license.md
-- Api:
-  - 4.0.2-SNAPSHOT: api/4.0.2-SNAPSHOT.md
 - API Docs:
   - 4.0.2-SNAPSHOT: api/4.0.2-SNAPSHOT.md
 theme: material
