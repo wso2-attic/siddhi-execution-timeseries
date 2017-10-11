@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
@@ -270,6 +271,75 @@ public class LengthTimeLinearRegressionTestcase {
 
     }
 
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest3() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[0] type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeRegress('1stpara', "
+                + "10000, y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest4() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[1] type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeRegress(200, "
+                + " '2ndpara', y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest5() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test Confidence interval must be a constant");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeRegress(200, "
+                + "10000,1, y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest6() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[2] type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeRegress(200, "
+                + "10000,1.0, y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest7() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[3] interval range");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeRegress(200, "
+                + "10000,1,2.0, y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
     @Test
     public void multipleRegressionTest1() throws Exception {
         LOGGER.info("Multiple Regression TestCase");

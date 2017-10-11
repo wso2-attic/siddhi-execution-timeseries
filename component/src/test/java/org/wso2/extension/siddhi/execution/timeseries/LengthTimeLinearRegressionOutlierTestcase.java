@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
@@ -223,6 +224,74 @@ public class LengthTimeLinearRegressionOutlierTestcase {
         AssertJUnit.assertEquals(true, outlier);
 
         siddhiAppRuntime.shutdown();
+    }
 
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest3() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test as attributeExpressionExecutors[0]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeOutlier('1stpara', "
+                + "10000, 1, y, x) select * " + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest4() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test as attributeExpressionExecutors[1]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeOutlier(200, "
+                + " '2ndpara', 1, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest5() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test as attributeExpressionExecutors[3]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeOutlier(200, "
+                + "10000, 1,1.0, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest6() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test as attributeExpressionExecutors[4]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeOutlier(200, "
+                + "10000, 1, 1, 1, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest7() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test as attributeExpressionExecutors[4]'s interval range");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeOutlier(200, "
+                + "10000, 1,1,2.0, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
     }
 }
