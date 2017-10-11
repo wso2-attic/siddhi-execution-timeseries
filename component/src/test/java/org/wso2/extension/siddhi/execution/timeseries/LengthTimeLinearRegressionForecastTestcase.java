@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
@@ -224,7 +225,85 @@ public class LengthTimeLinearRegressionForecastTestcase {
         AssertJUnit.assertEquals("No of events: ", 25, count.get());
 
         siddhiAppRuntime.shutdown();
+    }
 
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest3() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[0]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast('1stpara'," +
+                "100000, x+2, 2, 0.95, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest4() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[1]'s type");
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast(200," +
+                " '2ndpara', x+2, 2, 0.95, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest5() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[2]'s type");
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast(200 ," +
+                " 10000, x+2, '3rdpara', 0.95, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest6() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[3]'s type");
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast(200 ," +
+                " 10000, x+2, 2, 2, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest7() throws Exception {
+         LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[3]'s interval");
+
+        SiddhiManager siddhiManager = new SiddhiManager();
+
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast(200 ," +
+                " 10000, x+2, 2, 2.0, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest8() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test as attributeExpressionExecutors[1] is a constant or not  ");
+
+        SiddhiManager siddhiManager = new SiddhiManager();
+
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+        // Limit number of events based on time window (query):
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:lengthTimeForecast(200 ," +
+                " x, y) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
     }
 
 }

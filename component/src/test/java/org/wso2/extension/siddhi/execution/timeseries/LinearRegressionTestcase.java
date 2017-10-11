@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.query.output.callback.QueryCallback;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
@@ -131,6 +132,60 @@ public class LinearRegressionTestcase {
 
         siddhiAppRuntime.shutdown();
 
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest1() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[0]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:regress('1stpara', "
+                + "100, 0.95, y, x) select * "
+                + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest2() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[1]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:regress(1, '2ndpara', 0.95, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest3() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[2]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:regress(1, 100, 1, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleRegressionTest4() throws Exception {
+        LOGGER.info("Simple Regression TestCase with test attributeExpressionExecutors[2]'s interval range");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y int, x int);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:regress('1stpara', 100, 2.0, y, x) "
+                + "select * "
+                + "insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
     }
 
     @Test
@@ -304,6 +359,58 @@ public class LinearRegressionTestcase {
 
     }
 
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest1() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test attributeExpressionExecutors[0]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:forecast('1stpara', 1000, 0.95, "
+                + "x+2, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest2() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test attributeExpressionExecutors[1]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:forecast(2, '2ndpara', 0.95, "
+                + "x+2, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest3() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test attributeExpressionExecutors[2]'s type");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:forecast(2, 1000, 1, "
+                + "x+2, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleForecastTest4() throws Exception {
+        LOGGER.info("Simple Forecast TestCase with test attributeExpressionExecutors[2]'s interval range");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, symbol string, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:forecast(2, 1000, 2.0, "
+                + "x+2, y, x) select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
     @Test
     public void simpleOutlierTest() throws Exception {
         LOGGER.info("Simple Outlier TestCase");
@@ -388,6 +495,59 @@ public class LinearRegressionTestcase {
 
         siddhiAppRuntime.shutdown();
 
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest1() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test Calculation interval, batch size"
+                + " and range should be of type int");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:outlier(1,'1stpara', y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest2() throws Exception {
+        LOGGER.info("Simple Outlier TestCase");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:outlier(2,'2ndpara', y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest3() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test Confidence interval should be of type double");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:outlier(1,2,1, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
+    }
+
+    @Test(expectedExceptions = SiddhiAppCreationException.class)
+    public void simpleOutlierTest4() throws Exception {
+        LOGGER.info("Simple Outlier TestCase with test Confidence interval should be a value between 0 and 1 ");
+
+        siddhiManager = new SiddhiManager();
+        String inputStream = "define stream InputStream (y double, x double);";
+
+        String executionPlan = ("@info(name = 'query1') from InputStream#timeseries:outlier(1,2,2.0, y, x) "
+                + "select * insert into OutputStream;");
+
+        siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
     }
 
     @Test
