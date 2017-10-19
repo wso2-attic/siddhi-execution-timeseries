@@ -1,6 +1,396 @@
-# API Docs - v4.0.5-SNAPSHOT
+# API Docs - v4.0.5
 
 ## Timeseries
+
+### forecast *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
+
+<p style="word-wrap: break-word">This allows user to specify a batch size (optional) that defines the number of events to be considered for the regression calculation when forecasting the Y value.</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+timeseries:forecast(<INT> calculation.interval, <INT> batch.size, <DOUBLE> confidence.interval, <DOUBLE> next.x.value, <DOUBLE> y.stream, <DOUBLE> x.stream)
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">calculation.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">batch.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
+        <td style="vertical-align: top">1000000000</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">confidence.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
+        <td style="vertical-align: top">0.95</td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">next.x.value</td>
+        <td style="vertical-align: top; word-wrap: break-word">The value to be used to forecast the Y value. This can be a constant or an expression (e.g., x+5).</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">y.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">x.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream of the independent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+from StockExchangeStream#timeseries:forecast(X+5, Y, X)
+select *
+insert into StockForecaster
+```
+<p style="word-wrap: break-word">This query submits an expression to be used as the next X value (X+2), a dependent input stream (Y,) and an independent input stream (X) that are used to perform linear regression between Y and X streams, and compute the forecast Y value based on the next X value specified by the user.</p>
+
+### regress *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
+
+<p style="word-wrap: break-word">This allows user to specify the batch size (optional) that defines the number of events to be considered for the calculation of regression.</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+timeseries:regress(<INT> calculation.interval, <INT> batch.size, <DOUBLE> confidence.interval, <DOUBLE> y.stream, <DOUBLE> x.stream)
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">calculation.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">batch.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
+        <td style="vertical-align: top">1000000000</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">confidence.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
+        <td style="vertical-align: top">0.95</td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">y.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">x.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream(s) of the independent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+from StockExchangeStream#timeseries:regress(10, 100000, 0.95, Y, X1, X2, X3)
+select *
+insert into StockForecaster
+```
+<p style="word-wrap: break-word">This  query submits a calculation interval (every 10 events), a batch size (100,000 events), a confidence interval (0.95), a dependent input stream (Y) and 3 independent input streams (X1, X2, X3) that are used to perform linear regression between Y and all the X streams.</p>
+
+### lengthTimeRegress *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
+
+<p style="word-wrap: break-word">This allows user to specify the time window and batch size (required). The number of events considered for the regression calculation can be restricted based on the time window and/or the batch size.</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+timeseries:lengthTimeRegress(<LONG> time.window, <INT> batch.size, <INT> calculation.interval, <DOUBLE> confidence.interval, <DOUBLE> y.stream, <DOUBLE> x.stream)
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">time.window</td>
+        <td style="vertical-align: top; word-wrap: break-word">The maximum time duration to be considered for the regression calculation.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">batch.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
+        <td style="vertical-align: top">1000000000</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">calculation.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">confidence.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
+        <td style="vertical-align: top">0.95</td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">y.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">x.stream</td>
+        <td style="vertical-align: top; word-wrap: break-word">The data stream(s) of the independent variable.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+from StockExchangeStream#timeseries:lengthTimeRegress(200, 10000, 2, 0.95, Y, X)
+select *
+insert into StockForecaster;
+```
+<p style="word-wrap: break-word">This  query submits a time window (200 milliseconds), a batch size (10,000 events), a calculation interval (every 2 events), a confidence interval (0.95), a dependent input stream (Y) and an independent input stream (X) that are used to perform linear regression between Y and all the X streams.</p>
+
+### kernelMinMax *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
+
+<p style="word-wrap: break-word">TBD</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+timeseries:kernelMinMax(<DOUBLE|FLOAT|INT|LONG> variable, <DOUBLE> bandwidth, <INT> window.size, <STRING> extrema.type)
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">variable</td>
+        <td style="vertical-align: top; word-wrap: break-word">The time series value to be considered for minima maxima detection.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE<br>FLOAT<br>INT<br>LONG</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">bandwidth</td>
+        <td style="vertical-align: top; word-wrap: break-word">The bandwidth of the Gaussian Kernel calculation.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">window.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of values to be considered for smoothing and determining the extremes.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">extrema.type</td>
+        <td style="vertical-align: top; word-wrap: break-word">This can be min, max or minmax.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+from inputStream#timeseries:kernelMinMax(price, 3, 7, ?min?)
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns the maximum values for a set of price values.</p>
+
+<span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span>
+```
+from inputStream#timeseries:kernelMinMax(price, 3, 7, 'max')
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns the minimum values for a set of price values.</p>
+
+<span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span>
+```
+from inputStream#timeseries:kernelMinMax(price, 3, 7, ?minmax?)
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns both the minimum values and the maximum values for a set of price values.</p>
+
+### kalmanMinMax *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
+
+<p style="word-wrap: break-word">The kalmanMinMax function uses the kalman filter to smooth the time series values in the given window size, and then determine the maxima and minima of that set of values.</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+timeseries:kalmanMinMax(<DOUBLE|FLOAT|INT|LONG> variable, <DOUBLE> q, <DOUBLE> r, <INT> window.size, <STRING> extrema.type)
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">variable</td>
+        <td style="vertical-align: top; word-wrap: break-word">The time series value to be considered for minima maxima detection.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE<br>FLOAT<br>INT<br>LONG</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">q</td>
+        <td style="vertical-align: top; word-wrap: break-word">The standard deviation of the process noise.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">r</td>
+        <td style="vertical-align: top; word-wrap: break-word">The standard deviation of the measurement noise.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">DOUBLE</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">window.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of values to be considered for smoothing and determining the extremes.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">extrema.type</td>
+        <td style="vertical-align: top; word-wrap: break-word">This can be min, max or minmax.</td>
+        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns the maximum values for a set of price values.</p>
+
+<span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span>
+```
+from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns the minimum values for a set of price values.</p>
+
+<span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span>
+```
+from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')
+select *
+insert into outputStream;
+```
+<p style="word-wrap: break-word">This example returns both the minimum values and the maximum values for a set of price values.</p>
 
 ### outlier *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
 
@@ -166,84 +556,6 @@ insert into StockForecaster
 ```
 <p style="word-wrap: break-word">This query submits a time window (2 seconds), a batch size (100 events), a constant to be used as the next X value (10), a dependent input stream (Y) and an independent input stream (X) that are used to perform linear regression between Y and X streams, and compute the forecast Y value based on the next X value specified by the user.</p>
 
-### forecast *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
-
-<p style="word-wrap: break-word">This allows user to specify a batch size (optional) that defines the number of events to be considered for the regression calculation when forecasting the Y value.</p>
-
-<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
-```
-timeseries:forecast(<INT> calculation.interval, <INT> batch.size, <DOUBLE> confidence.interval, <DOUBLE> next.x.value, <DOUBLE> y.stream, <DOUBLE> x.stream)
-```
-
-<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
-<table>
-    <tr>
-        <th>Name</th>
-        <th style="min-width: 20em">Description</th>
-        <th>Default Value</th>
-        <th>Possible Data Types</th>
-        <th>Optional</th>
-        <th>Dynamic</th>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">calculation.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
-        <td style="vertical-align: top">1</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">batch.size</td>
-        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
-        <td style="vertical-align: top">1000000000</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">confidence.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
-        <td style="vertical-align: top">0.95</td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">next.x.value</td>
-        <td style="vertical-align: top; word-wrap: break-word">The value to be used to forecast the Y value. This can be a constant or an expression (e.g., x+5).</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">y.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">x.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream of the independent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-</table>
-
-<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
-<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
-```
-from StockExchangeStream#timeseries:forecast(X+5, Y, X)
-select *
-insert into StockForecaster
-```
-<p style="word-wrap: break-word">This query submits an expression to be used as the next X value (X+2), a dependent input stream (Y,) and an independent input stream (X) that are used to perform linear regression between Y and X streams, and compute the forecast Y value based on the next X value specified by the user.</p>
-
 ### lengthTimeOutlier *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
 
 <p style="word-wrap: break-word">This allows user to restrict the number of events considered for the regression calculation performed when finding outliers based on a specified time window and/or a batch size.</p>
@@ -329,316 +641,4 @@ select *
 insert into StockForecaster;
 ```
 <p style="word-wrap: break-word">This query submits a time window (2 seconds), a batch size (100 events), the number of standard deviations to be used as a range (2), a dependent input stream (Y) and an independent input stream (X), that are used to perform linear regression between Y and X. It returns an output that indicates whether the current event is an outlier or not.</p>
-
-### regress *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
-
-<p style="word-wrap: break-word">This allows user to specify the batch size (optional) that defines the number of events to be considered for the calculation of regression.</p>
-
-<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
-```
-timeseries:regress(<INT> calculation.interval, <INT> batch.size, <DOUBLE> confidence.interval, <DOUBLE> y.stream, <DOUBLE> x.stream)
-```
-
-<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
-<table>
-    <tr>
-        <th>Name</th>
-        <th style="min-width: 20em">Description</th>
-        <th>Default Value</th>
-        <th>Possible Data Types</th>
-        <th>Optional</th>
-        <th>Dynamic</th>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">calculation.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
-        <td style="vertical-align: top">1</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">batch.size</td>
-        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
-        <td style="vertical-align: top">1000000000</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">confidence.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
-        <td style="vertical-align: top">0.95</td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">y.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">x.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream(s) of the independent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-</table>
-
-<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
-<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
-```
-from StockExchangeStream#timeseries:regress(10, 100000, 0.95, Y, X1, X2, X3)
-select *
-insert into StockForecaster
-```
-<p style="word-wrap: break-word">This  query submits a calculation interval (every 10 events), a batch size (100,000 events), a confidence interval (0.95), a dependent input stream (Y) and 3 independent input streams (X1, X2, X3) that are used to perform linear regression between Y and all the X streams.</p>
-
-### kalmanMinMax *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
-
-<p style="word-wrap: break-word">The kalmanMinMax function uses the kalman filter to smooth the time series values in the given window size, and then determine the maxima and minima of that set of values.</p>
-
-<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
-```
-timeseries:kalmanMinMax(<DOUBLE|FLOAT|INT|LONG> variable, <DOUBLE> q, <DOUBLE> r, <INT> window.size, <STRING> extrema.type)
-```
-
-<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
-<table>
-    <tr>
-        <th>Name</th>
-        <th style="min-width: 20em">Description</th>
-        <th>Default Value</th>
-        <th>Possible Data Types</th>
-        <th>Optional</th>
-        <th>Dynamic</th>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">variable</td>
-        <td style="vertical-align: top; word-wrap: break-word">The time series value to be considered for minima maxima detection.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE<br>FLOAT<br>INT<br>LONG</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">q</td>
-        <td style="vertical-align: top; word-wrap: break-word">The standard deviation of the process noise.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">r</td>
-        <td style="vertical-align: top; word-wrap: break-word">The standard deviation of the measurement noise.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">window.size</td>
-        <td style="vertical-align: top; word-wrap: break-word">The number of values to be considered for smoothing and determining the extremes.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">extrema.type</td>
-        <td style="vertical-align: top; word-wrap: break-word">This can be min, max or minmax.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">STRING</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-</table>
-
-<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
-<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
-```
-from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns the maximum values for a set of price values.</p>
-
-<span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span>
-```
-from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns the minimum values for a set of price values.</p>
-
-<span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span>
-```
-from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns both the minimum values and the maximum values for a set of price values.</p>
-
-### kernelMinMax *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
-
-<p style="word-wrap: break-word">TBD</p>
-
-<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
-```
-timeseries:kernelMinMax(<DOUBLE|FLOAT|INT|LONG> variable, <DOUBLE> bandwidth, <INT> window.size, <STRING> extrema.type)
-```
-
-<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
-<table>
-    <tr>
-        <th>Name</th>
-        <th style="min-width: 20em">Description</th>
-        <th>Default Value</th>
-        <th>Possible Data Types</th>
-        <th>Optional</th>
-        <th>Dynamic</th>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">variable</td>
-        <td style="vertical-align: top; word-wrap: break-word">The time series value to be considered for minima maxima detection.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE<br>FLOAT<br>INT<br>LONG</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">bandwidth</td>
-        <td style="vertical-align: top; word-wrap: break-word">The bandwidth of the Gaussian Kernel calculation.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">window.size</td>
-        <td style="vertical-align: top; word-wrap: break-word">The number of values to be considered for smoothing and determining the extremes.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">extrema.type</td>
-        <td style="vertical-align: top; word-wrap: break-word">This can be min, max or minmax.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">STRING</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-</table>
-
-<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
-<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
-```
-from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘min’)
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns the maximum values for a set of price values.</p>
-
-<span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span>
-```
-from inputStream#timeseries:kernelMinMax(price, 3, 7, 'max')
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns the minimum values for a set of price values.</p>
-
-<span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span>
-```
-from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘minmax’)
-select *
-insert into outputStream;
-```
-<p style="word-wrap: break-word">This example returns both the minimum values and the maximum values for a set of price values.</p>
-
-### lengthTimeRegress *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a>*
-
-<p style="word-wrap: break-word">This allows user to specify the time window and batch size (required). The number of events considered for the regression calculation can be restricted based on the time window and/or the batch size.</p>
-
-<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
-```
-timeseries:lengthTimeRegress(<LONG> time.window, <INT> batch.size, <INT> calculation.interval, <DOUBLE> confidence.interval, <DOUBLE> y.stream, <DOUBLE> x.stream)
-```
-
-<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
-<table>
-    <tr>
-        <th>Name</th>
-        <th style="min-width: 20em">Description</th>
-        <th>Default Value</th>
-        <th>Possible Data Types</th>
-        <th>Optional</th>
-        <th>Dynamic</th>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">time.window</td>
-        <td style="vertical-align: top; word-wrap: break-word">The maximum time duration to be considered for the regression calculation.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">LONG</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">batch.size</td>
-        <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
-        <td style="vertical-align: top">1000000000</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">calculation.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The frequency with which the regression calculation should be carried out.</td>
-        <td style="vertical-align: top">1</td>
-        <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">confidence.interval</td>
-        <td style="vertical-align: top; word-wrap: break-word">The confidence interval to be used for a regression calculation.</td>
-        <td style="vertical-align: top">0.95</td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">Yes</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">y.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream of the dependent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top">x.stream</td>
-        <td style="vertical-align: top; word-wrap: break-word">The data stream(s) of the independent variable.</td>
-        <td style="vertical-align: top"></td>
-        <td style="vertical-align: top">DOUBLE</td>
-        <td style="vertical-align: top">No</td>
-        <td style="vertical-align: top">No</td>
-    </tr>
-</table>
-
-<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
-<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
-```
-from StockExchangeStream#timeseries:lengthTimeRegress(200, 10000, 2, 0.95, Y, X)
-select *
-insert into StockForecaster;
-```
-<p style="word-wrap: break-word">This  query submits a time window (200 milliseconds), a batch size (10,000 events), a calculation interval (every 2 events), a confidence interval (0.95), a dependent input stream (Y) and an independent input stream (X) that are used to perform linear regression between Y and all the X streams.</p>
 
