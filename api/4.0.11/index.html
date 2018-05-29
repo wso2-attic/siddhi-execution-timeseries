@@ -16,7 +16,7 @@
     
     
       
-        <title>4.0.9 - Siddhi-Execution-Timeseries</title>
+        <title>4.0.11 - Siddhi-Execution-Timeseries</title>
       
     
     
@@ -84,7 +84,7 @@
                 </span>
               
             
-            4.0.9
+            4.0.11
           
         </span>
       </div>
@@ -181,30 +181,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../4.0.11/" title="4.0.11" class="md-nav__link">
-      4.0.11
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../4.0.10/" title="4.0.10" class="md-nav__link">
-      4.0.10
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -216,11 +192,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="toc">
-        4.0.9
+        4.0.11
       </label>
     
-    <a href="./" title="4.0.9" class="md-nav__link md-nav__link--active">
-      4.0.9
+    <a href="./" title="4.0.11" class="md-nav__link md-nav__link--active">
+      4.0.11
     </a>
     
       
@@ -308,6 +284,30 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../4.0.10/" title="4.0.10" class="md-nav__link">
+      4.0.10
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../4.0.9/" title="4.0.9" class="md-nav__link">
+      4.0.9
+    </a>
   </li>
 
         
@@ -492,7 +492,7 @@
               
                 
                 
-                <h1 id="api-docs-v409">API Docs - v4.0.9</h1>
+                <h1 id="api-docs-v4011">API Docs - v4.0.11</h1>
 <h2 id="timeseries">Timeseries</h2>
 <h3 id="forecast-stream-processor">forecast <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em></h3>
 <p style="word-wrap: break-word">This allows user to specify a batch size (optional) that defines the number of events to be considered for the regression calculation when forecasting the Y value.</p>
@@ -811,7 +811,7 @@ insert into StockForecaster
 <p style="word-wrap: break-word">This query submits a time window (2 seconds), a batch size (100 events), a constant to be used as the next X value (10), a dependent input stream (Y) and an independent input stream (X) that are used to perform linear regression between Y and X streams, and compute the forecast Y value based on the next X value specified by the user.</p>
 
 <h3 id="lengthtimeoutlier-stream-processor">lengthTimeOutlier <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em></h3>
-<p style="word-wrap: break-word">This allows user to restrict the number of events considered for the regression calculation performed when finding outliers based on a specified time window and/or a batch size.</p>
+<p style="word-wrap: break-word">This allows you to restrict the number of events considered for the regression calculation performed when finding outliers based on a specified time window and/or a batch size.<br>This function should be used in one of the following formats.<br>lengthTimeOutlier(time window, batch size, range, Y, X)<br>or<br>lengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X) </p>
 
 <p><span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span></p>
 <pre><code>timeseries:lengthTimeOutlier(&lt;LONG&gt; time.window, &lt;INT&gt; batch.size, &lt;INT|LONG&gt; range, &lt;INT&gt; calculation.interval, &lt;DOUBLE&gt; confidence.interval, &lt;DOUBLE&gt; y.stream, &lt;DOUBLE&gt; x.stream)
@@ -969,7 +969,7 @@ insert into StockForecaster;
 <p style="word-wrap: break-word">This  query submits a time window (200 milliseconds), a batch size (10,000 events), a calculation interval (every 2 events), a confidence interval (0.95), a dependent input stream (Y) and an independent input stream (X) that are used to perform linear regression between Y and all the X streams.</p>
 
 <h3 id="outlier-stream-processor">outlier <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em></h3>
-<p style="word-wrap: break-word">This allows user to specify a batch size (optional) that defines the number of events to be considered for the calculation of regression when finding outliers.</p>
+<p style="word-wrap: break-word">This allows you to specify a batch size (optional) that defines the number of events to be considered for the calculation of regression when finding outliers.<br>This function should be used in one of the following formats.<br>outlier(range, Y, X)<br>or<br>outlier(calculation interval, batch size, confidence interval, range, Y, X) </p>
 
 <p><span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span></p>
 <pre><code>timeseries:outlier(&lt;INT&gt; batch.size, &lt;INT|LONG&gt; range, &lt;INT&gt; calculation.interval, &lt;DOUBLE&gt; confidence.interval, &lt;DOUBLE&gt; y.stream, &lt;DOUBLE&gt; x.stream)
@@ -988,17 +988,17 @@ insert into StockForecaster;
     <tr>
         <td style="vertical-align: top">batch.size</td>
         <td style="vertical-align: top; word-wrap: break-word">The maximum number of events that shoukd be used for a regression calculation.</td>
-        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">100000</td>
         <td style="vertical-align: top">INT</td>
-        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>
     <tr>
         <td style="vertical-align: top">range</td>
         <td style="vertical-align: top; word-wrap: break-word">The number of standard deviations from the regression calculation.</td>
-        <td style="vertical-align: top"></td>
+        <td style="vertical-align: top">0.95</td>
         <td style="vertical-align: top">INT<br>LONG</td>
-        <td style="vertical-align: top">No</td>
+        <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>
     <tr>
@@ -1127,7 +1127,7 @@ insert into StockForecaster
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../4.0.10/" title="4.0.10" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../.." title="Welcome to WSO2 Siddhi Execution Timeseries" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1136,19 +1136,19 @@ insert into StockForecaster
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                4.0.10
+                Welcome to WSO2 Siddhi Execution Timeseries
               </span>
             </div>
           </a>
         
         
-          <a href="../4.0.8/" title="4.0.8" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../4.0.10/" title="4.0.10" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                4.0.8
+                4.0.10
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
