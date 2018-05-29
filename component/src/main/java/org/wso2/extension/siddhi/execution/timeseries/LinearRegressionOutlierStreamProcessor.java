@@ -53,15 +53,23 @@ import java.util.Map;
 @Extension(
         name = "outlier",
         namespace = "timeseries",
-        description = "This allows user to specify a batch size (optional) that defines the number of events " +
-                "to be considered for the calculation of regression when finding outliers.",
+        description = "This allows you to specify a batch size (optional) that defines the number of events " +
+                "to be considered for the calculation of regression when finding outliers." +
+                "\nThis function should be used in one of the following formats." +
+                "\noutlier(range, Y, X)" +
+                "\nor" +
+                "\noutlier(calculation interval, batch size, confidence interval, range, Y, X) ",
         parameters = {
                 @Parameter(name = "batch.size",
                         description = "The maximum number of events that shoukd be used for a regression calculation.",
-                        type = {DataType.INT}),
+                        type = {DataType.INT},
+                        optional = true,
+                        defaultValue = "100000"),
                 @Parameter(name = "range",
                         description = "The number of standard deviations from the regression calculation.",
-                        type = {DataType.INT, DataType.LONG}),
+                        type = {DataType.INT, DataType.LONG},
+                        optional = true,
+                        defaultValue = "0.95"),
                 @Parameter(name = "calculation.interval",
                         description = "The frequency with which the regression calculation should be carried out.",
                         type = {DataType.INT},

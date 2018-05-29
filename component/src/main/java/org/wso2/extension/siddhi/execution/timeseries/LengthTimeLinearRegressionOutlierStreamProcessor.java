@@ -43,6 +43,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The outlier function takes in a dependent event stream (Y), an independent event stream (X)
+ * and a user specified range for outliers, and
+ * returns an output to indicate whether the current event is an outlier based on the regression equation
+ * that fits historical data.
+ *
  * This class detects outliers based on simple linear regression.
  * Number of data points could be constrained using both time and length windows.
  */
@@ -50,8 +55,12 @@ import java.util.Map;
 @Extension(
         name = "lengthTimeOutlier",
         namespace = "timeseries",
-        description = "This allows user to restrict the number of events considered for the regression calculation " +
-                "performed when finding outliers based on a specified time window and/or a batch size.",
+        description = "This allows you to restrict the number of events considered for the regression calculation " +
+                "performed when finding outliers based on a specified time window and/or a batch size." +
+                "\nThis function should be used in one of the following formats." +
+                "\nlengthTimeOutlier(time window, batch size, range, Y, X)" +
+                "\nor" +
+                "\nlengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X) ",
         parameters = {
                 @Parameter(name = "time.window",
                         description = "The maximum time duration that should be considered for " +
