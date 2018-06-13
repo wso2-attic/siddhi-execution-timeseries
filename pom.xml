@@ -45,15 +45,15 @@
     </profiles>
 
     <properties>
-        <siddhi.version>4.0.4</siddhi.version>
+        <siddhi.version>4.1.38</siddhi.version>
         <log4j.version>1.2.17.wso2v1</log4j.version>
         <junit.version>4.12</junit.version>
         <commons-math3.version>3.2</commons-math3.version>
         <jama.version>1.0.3</jama.version>
         <testng.version>6.8</testng.version>
         <jacoco.version>0.7.9</jacoco.version>
-        <siddhi.execution.math.version>4.0.9</siddhi.execution.math.version>
-        <siddhi.execution.time.version>4.0.6</siddhi.execution.time.version>
+        <siddhi.execution.math.version>4.1.15</siddhi.execution.math.version>
+        <siddhi.execution.time.version>4.0.11</siddhi.execution.time.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mavan.findbugsplugin.exclude.file>findbugs-exclude.xml</mavan.findbugsplugin.exclude.file>
