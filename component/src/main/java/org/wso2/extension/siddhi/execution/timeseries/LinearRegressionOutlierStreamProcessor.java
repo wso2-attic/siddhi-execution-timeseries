@@ -60,8 +60,8 @@ import java.util.Map;
                 "\noutlier(range, Y, X)" +
                 "\nor" +
                 "\noutlier(calculation interval, batch size, confidence interval, range, Y, X). There can be " +
-                "different outputs and β coefficients of the regression equation can return dynamic attributes " +
-                "as beta1 , beta2 ... betan",
+                "\ndifferent outputs and β coefficients of the regression equation and can return dynamic " +
+                "\nattributes as beta1 , beta2 ... betan",
         parameters = {
                 @Parameter(name = "batch.size",
                         description = "The maximum number of events that shoukd be used for a regression calculation.",

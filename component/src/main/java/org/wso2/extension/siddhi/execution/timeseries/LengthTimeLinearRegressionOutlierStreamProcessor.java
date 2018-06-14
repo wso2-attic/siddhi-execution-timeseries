@@ -61,7 +61,9 @@ import java.util.Map;
                 "\nThis function should be used in one of the following formats." +
                 "\nlengthTimeOutlier(time window, batch size, range, Y, X)" +
                 "\nor" +
-                "\nlengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X) ",
+                "\nlengthTimeOutlier(time window, batch size, range, calculation interval, " +
+                "\nconfidence interval, Y, X) There can be different outputs and β coefficients of the regression " +
+                "\nequation and can return dynamic attributes as beta1 , beta2 ... betan ",
         parameters = {
                 @Parameter(name = "time.window",
                         description = "The maximum time duration that should be considered for " +
