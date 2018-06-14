@@ -23,6 +23,7 @@ import org.wso2.extension.siddhi.execution.timeseries.linreg.SimpleLinearRegress
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.ReturnAttribute;
 import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.ComplexEvent;
@@ -58,7 +59,9 @@ import java.util.Map;
                 "\nThis function should be used in one of the following formats." +
                 "\noutlier(range, Y, X)" +
                 "\nor" +
-                "\noutlier(calculation interval, batch size, confidence interval, range, Y, X) ",
+                "\noutlier(calculation interval, batch size, confidence interval, range, Y, X). There can be " +
+                "different outputs and β coefficients of the regression equation can return dynamic attributes " +
+                "as beta1 , beta2 ... betan",
         parameters = {
                 @Parameter(name = "batch.size",
                         description = "The maximum number of events that shoukd be used for a regression calculation.",
@@ -85,6 +88,28 @@ import java.util.Map;
                         type = {DataType.DOUBLE}),
                 @Parameter(name = "x.stream",
                         description = "The data stream of the independent variable.",
+                        type = {DataType.DOUBLE})
+        },
+        returnAttributes = {
+                @ReturnAttribute(
+                        name = "outlier",
+                        description = "True if the event is an outlier, False if not.",
+                        type = {DataType.BOOL}),
+                @ReturnAttribute(
+                        name = "stderr",
+                        description = "The standard error of the regression equation.",
+                        type = {DataType.DOUBLE}),
+                @ReturnAttribute(
+                        name = "beta0",
+                        description = "β coefficients of the regression equation.",
+                        type = {DataType.DOUBLE}),
+                @ReturnAttribute(
+                        name = "beta1",
+                        description = "β coefficients of the regression equation.",
+                        type = {DataType.DOUBLE}),
+                @ReturnAttribute(
+                        name = "betan",
+                        description = "β coefficients of the regression equation.",
                         type = {DataType.DOUBLE})
         },
         examples = {
