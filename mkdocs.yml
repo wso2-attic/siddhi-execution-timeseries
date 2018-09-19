@@ -10,7 +10,7 @@ repo_name: Siddhi-Execution-Timeseries
 repo_url: https://github.com/wso2-extensions/siddhi-execution-timeseries
 copyright: Copyright &copy; 2011 - 2018 WSO2
 theme:
-  name: 'material'
+  name: material
   logo: images/siddhi-logo-w.svg
   favicon: images/favicon.ico
   palette:
@@ -32,6 +32,7 @@ markdown_extensions:
 pages:
 - Welcome: index.md
 - API Docs:
+  - 4.0.18: api/4.0.18.md
   - 4.0.17: api/4.0.17.md
   - 4.0.16: api/4.0.16.md
   - 4.0.15: api/4.0.15.md
@@ -47,4 +48,3 @@ pages:
   - 4.0.5: api/4.0.5.md
   - latest: api/latest.md
 - License: about/license.md
-
