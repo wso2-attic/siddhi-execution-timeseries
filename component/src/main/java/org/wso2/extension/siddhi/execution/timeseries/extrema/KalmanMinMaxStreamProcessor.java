@@ -53,11 +53,12 @@ import java.util.Queue;
 @Extension(
         name = "kalmanMinMax",
         namespace = "timeseries",
-        description = "The kalmanMinMax function uses the kalman filter to smooth the time series values in the given" +
-                " window size, and then determine the maxima and minima of that set of values.",
+        description = "The kalmanMinMax function uses the kalman filter to smooth the values of the time series " +
+                "within a given window, and then determine the maxima and minima of that set of values.",
         parameters = {
                 @Parameter(name = "variable",
-                    description = "The time series value to be considered for minima maxima detection.",
+                    description = "The value of the time series to be considered for the maxima and/or " +
+                            "minima detection.",
                     type = {DataType.DOUBLE, DataType.FLOAT, DataType.INT, DataType.LONG}),
                 @Parameter(name = "q",
                         description = "The standard deviation of the process noise.",
@@ -70,28 +71,28 @@ import java.util.Queue;
                                 " determining the extremes.",
                         type = {DataType.INT}),
                 @Parameter(name = "extrema.type",
-                        description = "This can be min, max or minmax.",
+                        description = "The type of extrema considered, i.e., min, max or minmax.",
                         type = {DataType.STRING}),
         },
         examples = {
                 @Example(
-                        syntax = "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')\n" +
+                        syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
-                        description =  "This example returns the maximum values for a set of price values."
+                                "insert into OutputStream;",
+                        description =  "This example returns the maximum values for a set of price values given."
                 ),
                 @Example(
-                        syntax = "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')\n" +
+                        syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
-                        description =  "This example returns the minimum values for a set of price values."
+                                "insert into OutputStream;",
+                        description =  "This example returns the minimum values for a set of price values given."
                 ),
                 @Example(
-                        syntax = "from inputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')\n" +
+                        syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
+                                "insert into OutputStream;",
                         description =  "This example returns both the minimum values and the maximum values for a " +
-                                "set of price values."
+                                "set of price values given."
                 )
         }
 )
