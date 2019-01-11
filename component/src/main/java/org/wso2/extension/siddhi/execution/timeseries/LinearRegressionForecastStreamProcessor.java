@@ -51,7 +51,7 @@ import java.util.Map;
 @Extension(
         name = "forecast",
         namespace = "timeseries",
-        description = "This allows user to specify a batch size (optional) that defines the number of events " +
+        description = "This allows the user to specify a batch size (optional) that defines the number of events " +
                 "to be considered for the regression calculation when forecasting the Y value.",
         parameters = {
                 @Parameter(name = "calculation.interval",
@@ -60,7 +60,7 @@ import java.util.Map;
                         optional = true,
                         defaultValue = "1"),
                 @Parameter(name = "batch.size",
-                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        description = "The maximum number of events that could be used for a regression calculation.",
                         type = {DataType.INT},
                         optional = true,
                         defaultValue = "1000000000"),
@@ -86,9 +86,9 @@ import java.util.Map;
                                 "select *\n" +
                                 "insert into StockForecaster",
                         description =  "This query submits an expression to be used as the next X value (X+2)," +
-                                " a dependent input stream (Y,) and an independent input stream (X) that are used" +
-                                " to perform linear regression between Y and X streams, and" +
-                                " compute the forecast Y value based on the next X value specified by the user."
+                                " a dependent input stream (Y) and an independent input stream (X) that are used" +
+                                " to perform a linear regression between Y and X streams, and" +
+                                " compute the forecast of Y value based on the next X value specified by the user."
                 )
         }
 )

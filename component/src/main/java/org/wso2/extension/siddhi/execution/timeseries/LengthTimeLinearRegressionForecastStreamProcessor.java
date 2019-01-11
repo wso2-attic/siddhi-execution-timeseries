@@ -60,15 +60,15 @@ import java.util.Map;
 @Extension(
         name = "lengthTimeForecast",
         namespace = "timeseries",
-        description = "This allows user to restrict the number of events considered for the regression calculation " +
-                "when forecasting the Y value based on a specified time window and/or batch size.",
+        description = "This allows the user to restrict the number of events considered for the regression " +
+                "calculation when forecasting the Y value based on a specified time window and/or batch size.",
         parameters = {
                 @Parameter(name = "time.window",
                         description = "The maximum time duration that should be considered for " +
                                 "a regression calculation.",
                         type = {DataType.LONG}),
                 @Parameter(name = "batch.size",
-                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        description = "The maximum number of events that could be used for a regression calculation.",
                         type = {DataType.INT}),
                 @Parameter(name = "next.x.value",
                         description = "The value to be used to forecast the Y value. This can be a constant " +
@@ -98,9 +98,9 @@ import java.util.Map;
                                 "insert into StockForecaster",
                         description =  "This query submits a time window (2 seconds), a batch size (100 events), " +
                                 "a constant to be used as the next X value (10), a dependent input stream (Y) and " +
-                                "an independent input stream (X) that are used to perform linear regression " +
-                                "between Y and X streams, and compute the forecast Y value based on the next X value" +
-                                " specified by the user."
+                                "an independent input stream (X). These inputs are used to perform linear regression " +
+                                "between Y and X streams, and compute the forecast of Y value based on " +
+                                "the next X value specified by the user."
                 )
         }
 )

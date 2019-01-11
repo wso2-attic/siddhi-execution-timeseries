@@ -56,7 +56,8 @@ import java.util.Queue;
         description = "TBD",
         parameters = {
                 @Parameter(name = "variable",
-                        description = "The time series value to be considered for minima maxima detection.",
+                        description = "The value of the time series to be considered for the detection of minima " +
+                                "and/or maxima.",
                         type = {DataType.DOUBLE, DataType.FLOAT, DataType.INT, DataType.LONG}),
                 @Parameter(name = "bandwidth",
                         description = "The bandwidth of the Gaussian Kernel calculation.",
@@ -66,26 +67,26 @@ import java.util.Queue;
                                 " determining the extremes.",
                         type = {DataType.INT}),
                 @Parameter(name = "extrema.type",
-                        description = "This can be min, max or minmax.",
+                        description = "This is the type of extrema considered, i.e., min, max or minmax.",
                         type = {DataType.STRING}),
         },
         examples = {
                 @Example(
-                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘min’)\n" +
+                        syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, ‘min’)\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
+                                "insert into OutputStream;",
                         description =  "This example returns the maximum values for a set of price values."
                 ),
                 @Example(
-                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, 'max')\n" +
+                        syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, 'max')\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
+                                "insert into OutputStream;",
                         description =  "This example returns the minimum values for a set of price values."
                 ),
                 @Example(
-                        syntax = "from inputStream#timeseries:kernelMinMax(price, 3, 7, ‘minmax’)\n" +
+                        syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, ‘minmax’)\n" +
                                 "select *\n" +
-                                "insert into outputStream;",
+                                "insert into OutputStream;",
                         description =  "This example returns both the minimum values and the maximum values for a " +
                                 "set of price values."
                 )

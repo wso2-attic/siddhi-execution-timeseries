@@ -59,18 +59,17 @@ import java.util.Map;
         description = "This allows you to restrict the number of events considered for the regression calculation " +
                 "performed when finding outliers based on a specified time window and/or a batch size." +
                 "\nThis function should be used in one of the following formats." +
-                "\nlengthTimeOutlier(time window, batch size, range, Y, X)" +
-                "\nor" +
-                "\nlengthTimeOutlier(time window, batch size, range, calculation interval, " +
-                "\nconfidence interval, Y, X) There can be different outputs and β coefficients of the regression " +
-                "\nequation and can return dynamic attributes as beta1 , beta2 ... betan ",
+                "\nlengthTimeOutlier(time window, batch size, range, Y, X) OR" +
+                "\nlengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X)" +
+                "\nThere can be different outputs and β coefficients of the regression equation and can return " +
+                "dynamic attributes as beta1 , beta2 ... betan.",
         parameters = {
                 @Parameter(name = "time.window",
                         description = "The maximum time duration that should be considered for " +
                                 "a regression calculation.",
                         type = {DataType.LONG}),
                 @Parameter(name = "batch.size",
-                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        description = "The maximum number of events that could be used for the regression calculation.",
                         type = {DataType.INT}),
                 @Parameter(name = "range",
                         description = "The number of standard deviations from the regression calculation.",
@@ -95,7 +94,7 @@ import java.util.Map;
         returnAttributes = {
                 @ReturnAttribute(
                         name = "outlier",
-                        description = "True if the event is an outlier, False if not.",
+                        description = "The function returns 'True' if the event is an outlier and 'False' if not.",
                         type = {DataType.BOOL}),
                 @ReturnAttribute(
                         name = "stderr",

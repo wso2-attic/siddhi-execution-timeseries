@@ -56,7 +56,7 @@ import java.util.Map;
 @Extension(
         name = "regress",
         namespace = "timeseries",
-        description = "This allows user to specify the batch size (optional) that defines the number of events" +
+        description = "This allows the user to specify the batch size (optional) that defines the number of events" +
                 " to be considered for the calculation of regression.",
         parameters = {
                 @Parameter(name = "calculation.interval",
@@ -65,7 +65,7 @@ import java.util.Map;
                         optional = true,
                         defaultValue = "1"),
                 @Parameter(name = "batch.size",
-                        description = "The maximum number of events that shoukd be used for a regression calculation.",
+                        description = "The maximum number of events that should be used for a regression calculation.",
                         type = {DataType.INT},
                         optional = true,
                         defaultValue = "1000000000"),
