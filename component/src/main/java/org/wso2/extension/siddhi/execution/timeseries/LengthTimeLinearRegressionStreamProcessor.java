@@ -59,7 +59,8 @@ import java.util.Map;
                         description = "The maximum time duration to be considered for the regression calculation.",
                         type = {DataType.LONG}),
                 @Parameter(name = "batch.size",
-                        description = "The maximum number of events that should be used for the regression calculation.",
+                        description = "The maximum number of events that should be used for the " +
+                                "regression calculation.",
                         type = {DataType.INT},
                         optional = true,
                         defaultValue = "1000000000"),
