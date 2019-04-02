@@ -360,6 +360,18 @@
 
 
   <li class="md-nav__item">
+    <a href="api/4.1.2/" title="4.1.2" class="md-nav__link">
+      4.1.2
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="api/4.1.1/" title="4.1.1" class="md-nav__link">
       4.1.1
     </a>
@@ -685,7 +697,7 @@ which enables users to forecast and detect outliers in time series data, using L
 <li><a target="_blank" href="https://github.com/wso2-extensions/siddhi-execution-timeseries/issues">Issue tracker</a></li>
 </ul>
 <h2 id="latest-api-docs">Latest API Docs<a class="headerlink" href="#latest-api-docs" title="Permanent link">&para;</a></h2>
-<p>Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1">4.1.1</a>.</p>
+<p>Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2">4.1.2</a>.</p>
 <h2 id="how-to-use">How to use<a class="headerlink" href="#how-to-use" title="Permanent link">&para;</a></h2>
 <p><strong>Using the extension in <a target="_blank" href="https://github.com/wso2/product-sp">WSO2 Stream Processor</a></strong></p>
 <ul>
@@ -729,14 +741,14 @@ extension you can replace the component <a target="_blank" href="https://github
 <hr />
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#forecast-stream-processor">forecast</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify a batch size (optional) that defines the number of events to be considered for the regression calculation when forecasting the Y value.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#kalmanminmax-stream-processor">kalmanMinMax</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>The kalmanMinMax function uses the kalman filter to smooth the values of the time series within a given window, and then determine the maxima and minima of that set of values.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#kernelminmax-stream-processor">kernelMinMax</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>TBD</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#lengthtimeforecast-stream-processor">lengthTimeForecast</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to restrict the number of events considered for the regression calculation when forecasting the Y value based on a specified time window and/or batch size.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#lengthtimeoutlier-stream-processor">lengthTimeOutlier</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows you to restrict the number of events considered for the regression calculation performed when finding outliers based on a specified time window and/or a batch size.<br>This function should be used in one of the following formats.<br>lengthTimeOutlier(time window, batch size, range, Y, X) OR<br>lengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X)<br>There can be different outputs and ? coefficients of the regression equation and can return dynamic attributes as beta1 , beta2 ... betan.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#lengthtimeregress-stream-processor">lengthTimeRegress</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify the time window and batch size (required). The number of events considered for the regression calculation can be restricted based on the time window and/or the batch size.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#outlier-stream-processor">outlier</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify a batch size (optional) that defines the number of events to be considered for the calculation of regression while finding the outliers.<br>This function should be used in one of the following formats.<br>outlier(range, Y, X)<br>or<br>outlier(calculation interval, batch size, confidence interval, range, Y, X). There can be different outputs and ? coefficients of the regression equation and can return dynamic attributes as beta1 , beta2 ... betan.</p></div></li>
-<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.1/#regress-stream-processor">regress</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify the batch size (optional) that defines the number of events to be considered for the calculation of regression.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#forecast-stream-processor">forecast</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify a batch size (optional) that defines the number of events to be considered for the regression calculation when forecasting the Y value.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#kalmanminmax-stream-processor">kalmanMinMax</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>The kalmanMinMax function uses the kalman filter to smooth the values of the time series within a given window, and then determine the maxima and minima of that set of values.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#kernelminmax-stream-processor">kernelMinMax</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>TBD</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#lengthtimeforecast-stream-processor">lengthTimeForecast</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to restrict the number of events considered for the regression calculation when forecasting the Y value based on a specified time window and/or batch size.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#lengthtimeoutlier-stream-processor">lengthTimeOutlier</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows you to restrict the number of events considered for the regression calculation performed when finding outliers based on a specified time window and/or a batch size.<br>This function should be used in one of the following formats.<br>lengthTimeOutlier(time window, batch size, range, Y, X) OR<br>lengthTimeOutlier(time window, batch size, range, calculation interval, confidence interval, Y, X)<br>There can be different outputs and ? coefficients of the regression equation and can return dynamic attributes as beta1 , beta2 ... betan.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#lengthtimeregress-stream-processor">lengthTimeRegress</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify the time window and batch size (required). The number of events considered for the regression calculation can be restricted based on the time window and/or the batch size.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#outlier-stream-processor">outlier</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify a batch size (optional) that defines the number of events to be considered for the calculation of regression while finding the outliers.<br>This function should be used in one of the following formats.<br>outlier(range, Y, X)<br>or<br>outlier(calculation interval, batch size, confidence interval, range, Y, X). There can be different outputs and ? coefficients of the regression equation and can return dynamic attributes as beta1 , beta2 ... betan.</p></div></li>
+<li><a target="_blank" href="https://wso2-extensions.github.io/siddhi-execution-timeseries/api/4.1.2/#regress-stream-processor">regress</a> <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#stream-processor">(Stream Processor)</a></em><br><div style="padding-left: 1em;"><p>This allows the user to specify the batch size (optional) that defines the number of events to be considered for the calculation of regression.</p></div></li>
 </ul>
 <h2 id="how-to-contribute">How to Contribute<a class="headerlink" href="#how-to-contribute" title="Permanent link">&para;</a></h2>
 <ul>
@@ -791,13 +803,13 @@ extension you can replace the component <a target="_blank" href="https://github
       <nav class="md-footer-nav__inner md-grid">
         
         
-          <a href="api/4.1.1/" title="4.1.1" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="api/4.1.2/" title="4.1.2" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                4.1.1
+                4.1.2
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
