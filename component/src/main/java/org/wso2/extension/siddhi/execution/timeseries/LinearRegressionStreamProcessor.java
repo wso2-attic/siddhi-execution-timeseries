@@ -18,32 +18,35 @@
 
 package org.wso2.extension.siddhi.execution.timeseries;
 
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.config.SiddhiQueryContext;
+import io.siddhi.core.event.ComplexEvent;
+import io.siddhi.core.event.ComplexEventChunk;
+import io.siddhi.core.event.stream.MetaStreamEvent;
+import io.siddhi.core.event.stream.StreamEvent;
+import io.siddhi.core.event.stream.StreamEventCloner;
+import io.siddhi.core.event.stream.holder.StreamEventClonerHolder;
+import io.siddhi.core.event.stream.populater.ComplexEventPopulater;
+import io.siddhi.core.exception.SiddhiAppCreationException;
+import io.siddhi.core.executor.ConstantExpressionExecutor;
+import io.siddhi.core.executor.ExpressionExecutor;
+import io.siddhi.core.query.processor.ProcessingMode;
+import io.siddhi.core.query.processor.Processor;
+import io.siddhi.core.query.processor.stream.StreamProcessor;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.core.util.snapshot.state.State;
+import io.siddhi.core.util.snapshot.state.StateFactory;
+import io.siddhi.query.api.definition.AbstractDefinition;
+import io.siddhi.query.api.definition.Attribute;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.MultipleLinearRegressionCalculator;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.RegressionCalculator;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.SimpleLinearRegressionCalculator;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.ComplexEvent;
-import org.wso2.siddhi.core.event.ComplexEventChunk;
-import org.wso2.siddhi.core.event.stream.StreamEvent;
-import org.wso2.siddhi.core.event.stream.StreamEventCloner;
-import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
-import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
-import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
-import org.wso2.siddhi.core.executor.ExpressionExecutor;
-import org.wso2.siddhi.core.query.processor.Processor;
-import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.query.api.definition.AbstractDefinition;
-import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The methods supported by this function are
@@ -94,7 +97,7 @@ import java.util.Map;
                 )
         }
 )
-public class LinearRegressionStreamProcessor extends StreamProcessor {
+public class LinearRegressionStreamProcessor extends StreamProcessor<State> {
 
     private int paramCount = 0;                              // Number of x variables +1
     private int calcInterval = 1;                            // The frequency of regression calculation
@@ -102,11 +105,14 @@ public class LinearRegressionStreamProcessor extends StreamProcessor {
     private double ci = 0.95;                                // Confidence Interval
     private RegressionCalculator regressionCalculator = null;
     private int paramPosition = 0;
-
+    private ArrayList<Attribute> attributes;
 
     @Override
-    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
-                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+    protected StateFactory<State> init(MetaStreamEvent metaStreamEvent, AbstractDefinition abstractDefinition,
+                                       ExpressionExecutor[] expressionExecutors, ConfigReader configReader,
+                                       StreamEventClonerHolder streamEventClonerHolder,
+                                       boolean outputExpectsExpiredEvents, boolean findToBeExecuted,
+                                       SiddhiQueryContext siddhiQueryContext) {
         final int simpleLinregInputParamCount = 2;  // Number of Input parameters in a simple linear regression
         paramCount = attributeExpressionLength;
 
@@ -141,19 +147,20 @@ public class LinearRegressionStreamProcessor extends StreamProcessor {
 
         // Add attributes for standard error and all beta values
         String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(paramCount);
+        attributes = new ArrayList<Attribute>(paramCount);
         attributes.add(new Attribute("stderr", Attribute.Type.DOUBLE));
 
         for (int itr = 0; itr < paramCount; itr++) {
             betaVal = "beta" + itr;
             attributes.add(new Attribute(betaVal, Attribute.Type.DOUBLE));
         }
-        return attributes;
+        return null;
     }
 
     @Override
-    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
-                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
+    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor processor,
+                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater,
+                           State state) {
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 ComplexEvent complexEvent = streamEventChunk.next();
@@ -187,14 +194,12 @@ public class LinearRegressionStreamProcessor extends StreamProcessor {
     }
 
     @Override
-    public synchronized Map<String, Object> currentState() {
-        Map<String, Object> state = new HashMap<String, Object>();
-        return state;
+    public List<Attribute> getReturnAttributes() {
+        return attributes;
     }
 
     @Override
-    public synchronized void restoreState(Map<String, Object> state) {
-
+    public ProcessingMode getProcessingMode() {
+        return ProcessingMode.BATCH;
     }
-
 }

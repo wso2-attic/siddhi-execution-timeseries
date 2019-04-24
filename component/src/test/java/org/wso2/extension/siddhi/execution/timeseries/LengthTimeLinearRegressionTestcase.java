@@ -18,18 +18,18 @@
 
 package org.wso2.extension.siddhi.execution.timeseries;
 
+import io.siddhi.core.SiddhiAppRuntime;
+import io.siddhi.core.SiddhiManager;
+import io.siddhi.core.event.Event;
+import io.siddhi.core.exception.SiddhiAppCreationException;
+import io.siddhi.core.query.output.callback.QueryCallback;
+import io.siddhi.core.stream.input.InputHandler;
+import io.siddhi.core.util.EventPrinter;
+import io.siddhi.core.util.SiddhiTestHelper;
 import org.apache.log4j.Logger;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.siddhi.core.SiddhiAppRuntime;
-import org.wso2.siddhi.core.SiddhiManager;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
-import org.wso2.siddhi.core.query.output.callback.QueryCallback;
-import org.wso2.siddhi.core.stream.input.InputHandler;
-import org.wso2.siddhi.core.util.EventPrinter;
-import org.wso2.siddhi.core.util.SiddhiTestHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -452,7 +452,7 @@ public class LengthTimeLinearRegressionTestcase {
 
         InputHandler inputHandler = siddhiAppRuntime.getInputHandler("InputStream");
         siddhiAppRuntime.start();
-        
+
         // Limit number of events based on time window (test case):
         inputHandler.send(new Object[]{3300, 104, 22, 80, 3});
         inputHandler.send(new Object[]{2600, 66, 39, 69, 3});

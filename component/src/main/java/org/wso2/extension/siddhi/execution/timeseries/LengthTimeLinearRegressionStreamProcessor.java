@@ -17,31 +17,34 @@
  */
 package org.wso2.extension.siddhi.execution.timeseries;
 
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.config.SiddhiQueryContext;
+import io.siddhi.core.event.ComplexEventChunk;
+import io.siddhi.core.event.stream.MetaStreamEvent;
+import io.siddhi.core.event.stream.StreamEvent;
+import io.siddhi.core.event.stream.StreamEventCloner;
+import io.siddhi.core.event.stream.holder.StreamEventClonerHolder;
+import io.siddhi.core.event.stream.populater.ComplexEventPopulater;
+import io.siddhi.core.exception.SiddhiAppCreationException;
+import io.siddhi.core.executor.ConstantExpressionExecutor;
+import io.siddhi.core.executor.ExpressionExecutor;
+import io.siddhi.core.query.processor.ProcessingMode;
+import io.siddhi.core.query.processor.Processor;
+import io.siddhi.core.query.processor.stream.StreamProcessor;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.core.util.snapshot.state.State;
+import io.siddhi.core.util.snapshot.state.StateFactory;
+import io.siddhi.query.api.definition.AbstractDefinition;
+import io.siddhi.query.api.definition.Attribute;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeMultipleLinearRegression;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressionCalculator;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.ComplexEventChunk;
-import org.wso2.siddhi.core.event.stream.StreamEvent;
-import org.wso2.siddhi.core.event.stream.StreamEventCloner;
-import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
-import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
-import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
-import org.wso2.siddhi.core.executor.ExpressionExecutor;
-import org.wso2.siddhi.core.query.processor.Processor;
-import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.query.api.definition.AbstractDefinition;
-import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class performs linear regression.
@@ -97,7 +100,7 @@ import java.util.Map;
                 )
         }
 )
-public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
+public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor<State> {
     private static final int SIMPLE_LINREG_INPUT_PARAM_COUNT = 2; //Number of input parameters in
     private int paramCount; // Number of x variables +1
     private long duration; // Time window to consider for regression calculation
@@ -105,6 +108,7 @@ public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
     private double ci = 0.95; // Confidence Interval
     // simple linear regression
     private LengthTimeRegressionCalculator regressionCalculator = null;
+    private List<Attribute> attributes;
     private int yParameterPosition;
     // simple linear regression
 
@@ -114,13 +118,15 @@ public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
      *
      * @param abstractDefinition  the incoming stream definition
      * @param expressionExecutors the executors of each function parameters
-     * @param siddhiAppContext    the context of the execution plan
+     * @param siddhiQueryContext  siddhi query context
      * @return the additional output attributes introduced by the function
      */
     @Override
-    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
-                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-
+    protected StateFactory<State> init(MetaStreamEvent metaStreamEvent, AbstractDefinition abstractDefinition,
+                                       ExpressionExecutor[] expressionExecutors, ConfigReader configReader,
+                                       StreamEventClonerHolder streamEventClonerHolder,
+                                       boolean outputExpectsExpiredEvents, boolean findToBeExecuted,
+                                       SiddhiQueryContext siddhiQueryContext) {
         paramCount = attributeExpressionLength - 2; // First two events are time, length windows.
         yParameterPosition = 2;
         // Capture duration
@@ -193,13 +199,13 @@ public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
         }
         // Add attributes for standard error and all beta values
         String betaVal;
-        List<Attribute> attributes = new ArrayList<Attribute>(paramCount + 1);
+        attributes = new ArrayList<Attribute>(paramCount + 1);
         attributes.add(new Attribute("stderr", Attribute.Type.DOUBLE));
         for (int itr = 0; itr < paramCount; itr++) {
             betaVal = "beta" + itr;
             attributes.add(new Attribute(betaVal, Attribute.Type.DOUBLE));
         }
-        return attributes;
+        return null;
     }
 
     /**
@@ -213,11 +219,12 @@ public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
      */
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
-                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
+                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater,
+                           State state) {
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 StreamEvent streamEvent = streamEventChunk.next();
-                long currentTime = siddhiAppContext.getTimestampGenerator().currentTime();
+                long currentTime = siddhiQueryContext.getSiddhiAppContext().getTimestampGenerator().currentTime();
                 long eventExpiryTime = currentTime + duration;
                 Object[] inputData = new Object[paramCount];
                 for (int i = yParameterPosition; i < attributeExpressionLength; i++) {
@@ -256,21 +263,13 @@ public class LengthTimeLinearRegressionStreamProcessor extends StreamProcessor {
 
     }
 
-    /**
-     * Used to collect the serializable state of the processing element, that need to be
-     * persisted for reconstructing the element to the same state at a different point of time.
-     *
-     * @return stateful objects of the processing element as an array
-     */
-
     @Override
-    public synchronized Map<String, Object> currentState() {
-        Map<String, Object> state = new HashMap<String, Object>();
-        return state;
+    public List<Attribute> getReturnAttributes() {
+        return attributes;
     }
 
     @Override
-    public synchronized void restoreState(Map<String, Object> state) {
-
+    public ProcessingMode getProcessingMode() {
+        return ProcessingMode.BATCH;
     }
 }

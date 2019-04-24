@@ -19,25 +19,30 @@
 package org.wso2.extension.siddhi.execution.timeseries.extrema;
 
 
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.config.SiddhiQueryContext;
+import io.siddhi.core.event.ComplexEventChunk;
+import io.siddhi.core.event.stream.MetaStreamEvent;
+import io.siddhi.core.event.stream.StreamEvent;
+import io.siddhi.core.event.stream.StreamEventCloner;
+import io.siddhi.core.event.stream.holder.StreamEventClonerHolder;
+import io.siddhi.core.event.stream.populater.ComplexEventPopulater;
+import io.siddhi.core.executor.ConstantExpressionExecutor;
+import io.siddhi.core.executor.ExpressionExecutor;
+import io.siddhi.core.executor.VariableExpressionExecutor;
+import io.siddhi.core.query.processor.ProcessingMode;
+import io.siddhi.core.query.processor.Processor;
+import io.siddhi.core.query.processor.stream.StreamProcessor;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.core.util.snapshot.state.State;
+import io.siddhi.core.util.snapshot.state.StateFactory;
+import io.siddhi.query.api.definition.AbstractDefinition;
+import io.siddhi.query.api.definition.Attribute;
+import io.siddhi.query.api.exception.SiddhiAppValidationException;
 import org.wso2.extension.siddhi.execution.timeseries.extrema.util.ExtremaCalculator;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.ComplexEventChunk;
-import org.wso2.siddhi.core.event.stream.StreamEvent;
-import org.wso2.siddhi.core.event.stream.StreamEventCloner;
-import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
-import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
-import org.wso2.siddhi.core.executor.ExpressionExecutor;
-import org.wso2.siddhi.core.executor.VariableExpressionExecutor;
-import org.wso2.siddhi.core.query.processor.Processor;
-import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.query.api.definition.AbstractDefinition;
-import org.wso2.siddhi.query.api.definition.Attribute;
-import org.wso2.siddhi.query.api.exception.SiddhiAppValidationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +97,7 @@ import java.util.Queue;
                 )
         }
 )
-public class KernelMinMaxStreamProcessor extends StreamProcessor {
+public class KernelMinMaxStreamProcessor extends StreamProcessor<KernelMinMaxStreamProcessor.ExtensionState> {
 
     ExtremaType extremaType;
     int[] variablePosition;
@@ -104,10 +109,15 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
     ExtremaCalculator extremaCalculator = null;
     private int minEventPos;
     private int maxEventPos;
+    private List<Attribute> attributeList = new ArrayList<Attribute>();
+
 
     @Override
-    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
-                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+    protected StateFactory<ExtensionState> init(MetaStreamEvent metaStreamEvent, AbstractDefinition abstractDefinition,
+                                                ExpressionExecutor[] expressionExecutors, ConfigReader configReader,
+                                                StreamEventClonerHolder streamEventClonerHolder,
+                                                boolean outputExpectsExpiredEvents, boolean findToBeExecuted,
+                                                SiddhiQueryContext siddhiQueryContext) {
 
         if (attributeExpressionExecutors.length != 4) {
             throw new SiddhiAppValidationException("Invalid no of arguments passed to KernelMinMaxStreamProcessor," +
@@ -168,16 +178,16 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
         valueStack = new LinkedList<Double>();
         uniqueQueue = new LinkedList<StreamEvent>();
 
-        List<Attribute> attributeList = new ArrayList<Attribute>();
         attributeList.add(new Attribute("extremaType", Attribute.Type.STRING));
-        return attributeList;
+        return () -> new ExtensionState();
 
     }
 
     @Override
-    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
-                           StreamEventCloner streamEventCloner,
-                           ComplexEventPopulater complexEventPopulater) {
+    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor processor,
+                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater,
+                           ExtensionState extensionState) {
+
         ComplexEventChunk<StreamEvent> returnEventChunk = new ComplexEventChunk<StreamEvent>(false);
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
@@ -279,7 +289,7 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
                 uniqueQueue.add(extremaEvent);
                 eventStack.remove();
                 valueStack.remove();
-                return streamEventCloner.copyStreamEvent(extremaEvent);
+                return streamEventClonerHolder.getStreamEventCloner().copyStreamEvent(extremaEvent);
             }
         }
         return null;
@@ -296,20 +306,42 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor {
     }
 
     @Override
-    public synchronized Map<String, Object> currentState() {
-        Map<String, Object> state = new HashMap<String, Object>();
-        state.put("eventStack", eventStack);
-        state.put("valueStack", valueStack);
-        state.put("uniqueQueue", uniqueQueue);
-
-        return state;
+    public List<Attribute> getReturnAttributes() {
+        return attributeList;
     }
 
     @Override
-    public synchronized void restoreState(Map<String, Object> state) {
-        eventStack = (LinkedList<StreamEvent>) state.get("eventStack");
-        valueStack = (Queue<Double>) state.get("valueStack");
-        uniqueQueue = (Queue<StreamEvent>) state.get("uniqueQueue");
+    public ProcessingMode getProcessingMode() {
+        return ProcessingMode.BATCH;
+    }
+
+    class ExtensionState extends State {
+
+        @Override
+        public boolean canDestroy() {
+            return false;
+        }
+
+        @Override
+        public Map<String, Object> snapshot() {
+            synchronized (KernelMinMaxStreamProcessor.this) {
+                Map<String, Object> state = new HashMap<String, Object>();
+                state.put("eventStack", eventStack);
+                state.put("valueStack", valueStack);
+                state.put("uniqueQueue", uniqueQueue);
+
+                return state;
+            }
+        }
+
+        @Override
+        public void restore(Map<String, Object> state) {
+            synchronized (KernelMinMaxStreamProcessor.this) {
+                eventStack = (LinkedList<StreamEvent>) state.get("eventStack");
+                valueStack = (Queue<Double>) state.get("valueStack");
+                uniqueQueue = (Queue<StreamEvent>) state.get("uniqueQueue");
+            }
+        }
     }
 
     /**
