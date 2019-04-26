@@ -107,9 +107,6 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
     ExtremaCalculator extremaCalculator = null;
     private int[] variablePosition;
     private int windowSize = 0;
-    private LinkedList<StreamEvent> eventStack = null;
-    private Queue<Double> valueStack = null;
-    private Queue<StreamEvent> uniqueQueue = null;
     private double q;
     private double r;
     private int minEventPos;
@@ -176,9 +173,6 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
         } else {
             extremaType = ExtremaType.MINMAX;
         }
-        eventStack = new LinkedList<StreamEvent>();
-        valueStack = new LinkedList<Double>();
-        uniqueQueue = new LinkedList<StreamEvent>();
 
         attributeList.add(new Attribute("extremaType", Attribute.Type.STRING));
         return () -> new ExtensionState();
@@ -197,19 +191,21 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
                 streamEventChunk.remove();
                 Double eventKey = (Double) event.getAttribute(variablePosition);
                 extremaCalculator = new ExtremaCalculator(q, r);
-                eventStack.add(event);
-                valueStack.add(eventKey);
+                extensionState.addInEventStack(event);
+                extensionState.addInValueStack(eventKey);
+                
 
-                if (eventStack.size() > windowSize) {
 
-                    Queue<Double> output = extremaCalculator.kalmanFilter(valueStack);
+                if (extensionState.sizeOfEventStack() > windowSize) {
+
+                    Queue<Double> output = extremaCalculator.kalmanFilter(extensionState.valueStack);
                     StreamEvent maximumEvent;
                     StreamEvent minimumEvent;
 
                     switch (extremaType) {
                         case MINMAX:
-                            maximumEvent = getMaxEvent(output);
-                            minimumEvent = getMinEvent(output);
+                            maximumEvent = getMaxEvent(output, extensionState);
+                            minimumEvent = getMinEvent(output, extensionState);
                             if (maximumEvent != null && minimumEvent != null) {
                                 if (maxEventPos > minEventPos) {
                                     returnEventChunk.add(minimumEvent);
@@ -225,20 +221,20 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
                             }
                             break;
                         case MIN:
-                            minimumEvent = getMinEvent(output);
+                            minimumEvent = getMinEvent(output, extensionState);
                             if (minimumEvent != null) {
                                 returnEventChunk.add(minimumEvent);
                             }
                             break;
                         case MAX:
-                            maximumEvent = getMaxEvent(output);
+                            maximumEvent = getMaxEvent(output, extensionState);
                             if (maximumEvent != null) {
                                 returnEventChunk.add(maximumEvent);
                             }
                             break;
                     }
-                    eventStack.remove();
-                    valueStack.remove();
+                    extensionState.eventStack.remove();
+                    extensionState.valueStack.remove();
                 }
             }
         }
@@ -247,14 +243,14 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
         }
     }
 
-    private StreamEvent getMinEvent(Queue<Double> output) {
+    private StreamEvent getMinEvent(Queue<Double> output, ExtensionState extensionState) {
         // value 2 is an optimized value for stock market domain, this value may change for other domains
         Integer smoothenedMinEventPosition = extremaCalculator.findMin(output, 2);
         if (smoothenedMinEventPosition != null) {
             //value 10 is an optimized value for stock market domain, this value may change for other domains
-            Integer minEventPosition = extremaCalculator.findMin(valueStack, 10);
+            Integer minEventPosition = extremaCalculator.findMin(extensionState.valueStack, 10);
             if (minEventPosition != null) {
-                StreamEvent returnMinimumEvent = getExtremaEvent(minEventPosition);
+                StreamEvent returnMinimumEvent = getExtremaEvent(minEventPosition, extensionState);
                 if (returnMinimumEvent != null) {
                     minEventPos = minEventPosition;
                     complexEventPopulater.populateComplexEvent(returnMinimumEvent, new Object[]{"min"});
@@ -265,14 +261,14 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
         return null;
     }
 
-    private StreamEvent getMaxEvent(Queue<Double> output) {
+    private StreamEvent getMaxEvent(Queue<Double> output, ExtensionState extensionState) {
         // value 2 is an optimized value for stock market domain, this value may change for other domains
         Integer smoothenedMaxEventPosition = extremaCalculator.findMax(output, 2);
         if (smoothenedMaxEventPosition != null) {
             //value 10 is an optimized value for stock market domain, this value may change for other domains
-            Integer maxEventPosition = extremaCalculator.findMax(valueStack, 10);
+            Integer maxEventPosition = extremaCalculator.findMax(extensionState.valueStack, 10);
             if (maxEventPosition != null) {
-                StreamEvent returnMaximumEvent = getExtremaEvent(maxEventPosition);
+                StreamEvent returnMaximumEvent = getExtremaEvent(maxEventPosition, extensionState);
                 if (returnMaximumEvent != null) {
                     maxEventPos = maxEventPosition;
                     complexEventPopulater.populateComplexEvent(returnMaximumEvent, new Object[]{"max"});
@@ -283,14 +279,14 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
         return null;
     }
 
-    private StreamEvent getExtremaEvent(Integer eventPosition) {
-        StreamEvent extremaEvent = eventStack.get(eventPosition);
-        if (!uniqueQueue.contains(extremaEvent)) {
+    private StreamEvent getExtremaEvent(Integer eventPosition, ExtensionState extensionState) {
+        StreamEvent extremaEvent = extensionState.eventStack.get(eventPosition);
+        if (!extensionState.uniqueQueue.contains(extremaEvent)) {
             //value 5 is an optimized value for stock market domain, this value may change for other domains
-            if (uniqueQueue.size() > 5) {
-                uniqueQueue.remove();
+            if (extensionState.sizeOfUniqueQueue() > 5) {
+                extensionState.uniqueQueue.remove();
             }
-            uniqueQueue.add(extremaEvent);
+            extensionState.uniqueQueue.add(extremaEvent);
             return streamEventClonerHolder.getStreamEventCloner().copyStreamEvent(extremaEvent);
         }
         return null;
@@ -317,6 +313,32 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
     }
 
     class ExtensionState extends State {
+
+        private LinkedList<StreamEvent> eventStack;
+        private Queue<Double> valueStack;
+        private Queue<StreamEvent> uniqueQueue;
+
+        private ExtensionState() {
+            eventStack = new LinkedList<StreamEvent>();
+            valueStack = new LinkedList<Double>();
+            uniqueQueue = new LinkedList<StreamEvent>();
+        }
+
+        private synchronized void addInEventStack(StreamEvent event) {
+            eventStack.add(event);
+        }
+
+        private synchronized int sizeOfEventStack() {
+            return eventStack.size();
+        }
+
+        private synchronized void addInValueStack(Double eventKey) {
+            valueStack.add(eventKey);
+        }
+
+        private synchronized int sizeOfUniqueQueue() {
+            return uniqueQueue.size();
+        }
 
         @Override
         public boolean canDestroy() {
