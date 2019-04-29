@@ -340,6 +340,7 @@ public class LengthTimeLinearRegressionTestcase {
 
         siddhiManager.createSiddhiAppRuntime(inputStream + executionPlan);
     }
+
     @Test
     public void multipleRegressionTest1() throws Exception {
         LOGGER.info("Multiple Regression TestCase");

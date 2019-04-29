@@ -120,7 +120,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:outlier(2, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster;",
-                        description =  "This query submits the number of standard deviations to be used as" +
+                        description = "This query submits the number of standard deviations to be used as" +
                                 " a range (2), a dependent input stream (Y) and" +
                                 " an independent input stream (X) that are used to" +
                                 " perform linear regression between Y and X." +

@@ -40,7 +40,6 @@ MultipleLinearRegressionCalculator extends RegressionCalculator {
 
     @Override
     protected void addEvent(Object[] data) {
-
         incCounter++;
         eventCount++;
         double[] dataX = new double[xParameterCount + 1];

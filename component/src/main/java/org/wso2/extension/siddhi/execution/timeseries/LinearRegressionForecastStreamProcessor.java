@@ -88,7 +88,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:forecast(X+5, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster",
-                        description =  "This query submits an expression to be used as the next X value (X+2)," +
+                        description = "This query submits an expression to be used as the next X value (X+2)," +
                                 " a dependent input stream (Y) and an independent input stream (X) that are used" +
                                 " to perform a linear regression between Y and X streams, and" +
                                 " compute the forecast of Y value based on the next X value specified by the user."

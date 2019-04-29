@@ -41,7 +41,8 @@ public class LinearRegressionTestcase {
     protected static SiddhiManager siddhiManager;
     private AtomicInteger count = new AtomicInteger();
     private int waitTime = 2000;
-    private int timeout = 30000;    private double betaZero, betaTwo, forecastY;
+    private int timeout = 30000;
+    private double betaZero, betaTwo, forecastY;
     private boolean outlier;
 
     @BeforeMethod

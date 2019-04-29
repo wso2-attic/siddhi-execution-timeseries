@@ -18,7 +18,6 @@
 
 package org.wso2.extension.siddhi.execution.timeseries.extrema;
 
-
 import io.siddhi.annotation.Example;
 import io.siddhi.annotation.Extension;
 import io.siddhi.annotation.Parameter;
@@ -80,19 +79,19 @@ import java.util.Queue;
                         syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, ‘min’)\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns the maximum values for a set of price values."
+                        description = "This example returns the maximum values for a set of price values."
                 ),
                 @Example(
                         syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, 'max')\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns the minimum values for a set of price values."
+                        description = "This example returns the minimum values for a set of price values."
                 ),
                 @Example(
                         syntax = "from InputStream#timeseries:kernelMinMax(price, 3, 7, ‘minmax’)\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns both the minimum values and the maximum values for a " +
+                        description = "This example returns both the minimum values and the maximum values for a " +
                                 "set of price values."
                 )
         }
@@ -360,7 +359,6 @@ public class KernelMinMaxStreamProcessor extends StreamProcessor<KernelMinMaxStr
                 state.put("eventStack", eventStack);
                 state.put("valueStack", valueStack);
                 state.put("uniqueQueue", uniqueQueue);
-
                 return state;
             }
         }

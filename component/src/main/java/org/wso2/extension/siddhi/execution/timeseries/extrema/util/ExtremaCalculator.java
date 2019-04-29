@@ -18,7 +18,6 @@
 
 package org.wso2.extension.siddhi.execution.timeseries.extrema.util;
 
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;

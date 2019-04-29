@@ -18,7 +18,6 @@
 
 package org.wso2.extension.siddhi.execution.timeseries.extrema;
 
-
 import io.siddhi.annotation.Example;
 import io.siddhi.annotation.Extension;
 import io.siddhi.annotation.Parameter;
@@ -50,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-
 
 /**
  * Implementation of Kalman Min Max for siddhiQL.
@@ -84,19 +82,19 @@ import java.util.Queue;
                         syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'min')\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns the maximum values for a set of price values given."
+                        description = "This example returns the maximum values for a set of price values given."
                 ),
                 @Example(
                         syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'max')\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns the minimum values for a set of price values given."
+                        description = "This example returns the minimum values for a set of price values given."
                 ),
                 @Example(
                         syntax = "from InputStream#timeseries:kalmanMinMax(price, 0.000001,0.0001, 25, 'minmax')\n" +
                                 "select *\n" +
                                 "insert into OutputStream;",
-                        description =  "This example returns both the minimum values and the maximum values for a " +
+                        description = "This example returns both the minimum values and the maximum values for a " +
                                 "set of price values given."
                 )
         }
@@ -193,11 +191,7 @@ public class KalmanMinMaxStreamProcessor extends StreamProcessor<KalmanMinMaxStr
                 extremaCalculator = new ExtremaCalculator(q, r);
                 extensionState.addInEventStack(event);
                 extensionState.addInValueStack(eventKey);
-                
-
-
                 if (extensionState.sizeOfEventStack() > windowSize) {
-
                     Queue<Double> output = extremaCalculator.kalmanFilter(extensionState.valueStack);
                     StreamEvent maximumEvent;
                     StreamEvent minimumEvent;

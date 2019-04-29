@@ -89,7 +89,6 @@ public class SimpleLinearRegressionCalculator extends RegressionCalculator {
                 covarXY += (xArray[i] - meanX) * (yArray[i] - meanY);
             }
 
-
             //compute coefficients
             beta1 = covarXY / varianceX;
             beta0 = meanY - beta1 * meanX;

@@ -50,12 +50,12 @@ import java.util.List;
  * from InputStream#timeseries:lengthTimeOutlier(20 min, 20, x+2, y, x)
  * select *
  * insert into OutputStream;
- *
+ * <p>
  * Sample Query2 (time window, length window, nextX, calculation interval, confidence interval, y, x):
  * from InputStream#timeseries:lengthTimeOutlier(20 min, 20, x+2, 2, 0.9, y, x)
  * select *
  * insert into OutputStream;
- *
+ * <p>
  * This class performs enables users to forecast future events using linear regression
  * Number of data points could be constrained using both time and length windows.
  */
@@ -99,7 +99,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:lengthTimeForecast(2 sec, 100, 10, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster",
-                        description =  "This query submits a time window (2 seconds), a batch size (100 events), " +
+                        description = "This query submits a time window (2 seconds), a batch size (100 events), " +
                                 "a constant to be used as the next X value (10), a dependent input stream (Y) and " +
                                 "an independent input stream (X). These inputs are used to perform linear regression " +
                                 "between Y and X streams, and compute the forecast of Y value based on " +
@@ -116,7 +116,7 @@ public class LengthTimeLinearRegressionForecastStreamProcessor extends StreamPro
     private LengthTimeRegressionCalculator regressionCalculator = null;
     private List<Attribute> attributes;
     private int yParameterPosition;
-    // simple linear regressionmvn
+    // simple linear regression
 
     /**
      * The init method of the LinearRegressionOutlierStreamProcessor.

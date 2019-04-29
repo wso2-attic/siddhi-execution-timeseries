@@ -89,7 +89,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:lengthTimeRegress(200, 10000, 2, 0.95, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster;",
-                        description =  "This  query submits" +
+                        description = "This  query submits" +
                                 " a time window (200 milliseconds)," +
                                 " a batch size (10,000 events)," +
                                 " a calculation interval (every 2 events)," +

@@ -89,7 +89,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:regress(10, 100000, 0.95, Y, X1, X2, X3)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster",
-                        description =  "This  query submits a calculation interval (every 10 events)," +
+                        description = "This  query submits a calculation interval (every 10 events)," +
                                 " a batch size (100,000 events), a confidence interval (0.95)," +
                                 " a dependent input stream (Y) and" +
                                 " 3 independent input streams (X1, X2, X3) that are used to perform linear regression" +

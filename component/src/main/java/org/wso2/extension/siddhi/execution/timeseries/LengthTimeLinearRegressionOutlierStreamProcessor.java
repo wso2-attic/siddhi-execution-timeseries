@@ -51,7 +51,7 @@ import java.util.List;
  * and a user specified range for outliers, and
  * returns an output to indicate whether the current event is an outlier based on the regression equation
  * that fits historical data.
- *
+ * <p>
  * This class detects outliers based on simple linear regression.
  * Number of data points could be constrained using both time and length windows.
  */
@@ -121,7 +121,7 @@ import java.util.List;
                         syntax = "from StockExchangeStream#timeseries:lengthTimeOutlier(2 sec, 100, 2, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster;",
-                        description =  "This query submits a time window (2 seconds), a batch size (100 events)," +
+                        description = "This query submits a time window (2 seconds), a batch size (100 events)," +
                                 " the number of standard deviations to be used as a range (2)," +
                                 " a dependent input stream (Y) and an independent input stream (X)," +
                                 " that are used to perform linear regression between Y and X." +
@@ -139,7 +139,6 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
     private int yParameterPosition;
     private List<Attribute> attributes;
     private Object[] coefficients;
-    // simple linear regression
 
     /**
      * The init method of the LinearRegressionOutlierStreamProcessor.
