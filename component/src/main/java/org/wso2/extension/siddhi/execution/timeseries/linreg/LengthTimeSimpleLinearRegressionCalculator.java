@@ -150,9 +150,8 @@ public class LengthTimeSimpleLinearRegressionCalculator extends
             }
             regResult = new Object[]{stderr, beta0, beta1};
         } catch (NotStrictlyPositiveException e) {
-            regResult = new Object[] { 0.0, 0.0, 0.0 };
+            regResult = new Object[]{0.0, 0.0, 0.0};
         }
-
         return regResult;
     }
 }

@@ -35,7 +35,6 @@ public abstract class RegressionCalculator {
         batchSize = limit;
         xParameterCount = paramCount - 1;
         calcInterval = calcInt;
-
     }
 
     protected abstract void addEvent(Object[] data);

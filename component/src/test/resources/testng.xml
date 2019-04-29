@@ -22,12 +22,12 @@
 <suite name="Siddhi-Execution-TimeSeries_Test-Suite">
     <test name="siddhi-execution-timeseries-unit-tests" preserve-order="true">
         <classes>
-            <class name="org.wso2.extension.siddhi.execution.timeseries.KalmanExtensionTestCase" />
-            <class name="org.wso2.extension.siddhi.execution.timeseries.KernelExtensionTestCase" />
-            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionForecastTestcase" />
-            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionOutlierTestcase" />
-            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionTestcase" />
-            <class name="org.wso2.extension.siddhi.execution.timeseries.LinearRegressionTestcase" />
+            <class name="org.wso2.extension.siddhi.execution.timeseries.KalmanExtensionTestCase"/>
+            <class name="org.wso2.extension.siddhi.execution.timeseries.KernelExtensionTestCase"/>
+            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionForecastTestcase"/>
+            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionOutlierTestcase"/>
+            <class name="org.wso2.extension.siddhi.execution.timeseries.LengthTimeLinearRegressionTestcase"/>
+            <class name="org.wso2.extension.siddhi.execution.timeseries.LinearRegressionTestcase"/>
         </classes>
     </test>
 </suite>

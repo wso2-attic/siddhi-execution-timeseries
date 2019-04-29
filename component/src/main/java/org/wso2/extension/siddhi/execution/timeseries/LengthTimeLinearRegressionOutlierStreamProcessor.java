@@ -17,38 +17,41 @@
  */
 package org.wso2.extension.siddhi.execution.timeseries;
 
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.ReturnAttribute;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.config.SiddhiQueryContext;
+import io.siddhi.core.event.ComplexEventChunk;
+import io.siddhi.core.event.stream.MetaStreamEvent;
+import io.siddhi.core.event.stream.StreamEvent;
+import io.siddhi.core.event.stream.StreamEventCloner;
+import io.siddhi.core.event.stream.holder.StreamEventClonerHolder;
+import io.siddhi.core.event.stream.populater.ComplexEventPopulater;
+import io.siddhi.core.exception.SiddhiAppCreationException;
+import io.siddhi.core.executor.ConstantExpressionExecutor;
+import io.siddhi.core.executor.ExpressionExecutor;
+import io.siddhi.core.query.processor.ProcessingMode;
+import io.siddhi.core.query.processor.Processor;
+import io.siddhi.core.query.processor.stream.StreamProcessor;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.core.util.snapshot.state.State;
+import io.siddhi.core.util.snapshot.state.StateFactory;
+import io.siddhi.query.api.definition.AbstractDefinition;
+import io.siddhi.query.api.definition.Attribute;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeRegressionCalculator;
 import org.wso2.extension.siddhi.execution.timeseries.linreg.LengthTimeSimpleLinearRegressionCalculator;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.ReturnAttribute;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.ComplexEventChunk;
-import org.wso2.siddhi.core.event.stream.StreamEvent;
-import org.wso2.siddhi.core.event.stream.StreamEventCloner;
-import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
-import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
-import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
-import org.wso2.siddhi.core.executor.ExpressionExecutor;
-import org.wso2.siddhi.core.query.processor.Processor;
-import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.query.api.definition.AbstractDefinition;
-import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The outlier function takes in a dependent event stream (Y), an independent event stream (X)
  * and a user specified range for outliers, and
  * returns an output to indicate whether the current event is an outlier based on the regression equation
  * that fits historical data.
- *
+ * <p>
  * This class detects outliers based on simple linear regression.
  * Number of data points could be constrained using both time and length windows.
  */
@@ -118,7 +121,7 @@ import java.util.Map;
                         syntax = "from StockExchangeStream#timeseries:lengthTimeOutlier(2 sec, 100, 2, Y, X)\n" +
                                 "select *\n" +
                                 "insert into StockForecaster;",
-                        description =  "This query submits a time window (2 seconds), a batch size (100 events)," +
+                        description = "This query submits a time window (2 seconds), a batch size (100 events)," +
                                 " the number of standard deviations to be used as a range (2)," +
                                 " a dependent input stream (Y) and an independent input stream (X)," +
                                 " that are used to perform linear regression between Y and X." +
@@ -126,7 +129,7 @@ import java.util.Map;
                 )
         }
 )
-public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProcessor {
+public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProcessor<State> {
     private static final int SIMPLE_LINREG_INPUT_PARAM_COUNT = 2; //Number of input parameters in
     private int paramCount; // Number of x variables +1
     private long duration; // Time window to consider for regression calculation
@@ -134,8 +137,8 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
     private double ci = 0.95; // Confidence Interval simple linear regression
     private LengthTimeRegressionCalculator regressionCalculator = null;
     private int yParameterPosition;
+    private List<Attribute> attributes;
     private Object[] coefficients;
-    // simple linear regression
 
     /**
      * The init method of the LinearRegressionOutlierStreamProcessor.
@@ -143,13 +146,15 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
      *
      * @param abstractDefinition  the incoming stream definition
      * @param expressionExecutors the executors of each function parameters
-     * @param siddhiAppContext    the context of the execution plan
+     * @param siddhiQueryContext  siddhi query context
      * @return the additional output attributes introduced by the function
      */
     @Override
-    protected List<Attribute> init(AbstractDefinition abstractDefinition, ExpressionExecutor[] expressionExecutors,
-                                   ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-
+    protected StateFactory<State> init(MetaStreamEvent metaStreamEvent, AbstractDefinition abstractDefinition,
+                                       ExpressionExecutor[] expressionExecutors, ConfigReader configReader,
+                                       StreamEventClonerHolder streamEventClonerHolder,
+                                       boolean outputExpectsExpiredEvents, boolean findToBeExecuted,
+                                       SiddhiQueryContext siddhiQueryContext) {
         paramCount = attributeExpressionLength - 3; // First three events are time window, length
         // window and range
         yParameterPosition = 3;
@@ -224,14 +229,14 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
         }
         // Create attributes for standard error and all beta values and the outlier result
         String betaVal;
-        List<Attribute> attributes = new ArrayList<Attribute>(paramCount + 2);
+        attributes = new ArrayList<Attribute>(paramCount + 2);
         attributes.add(new Attribute("stderr", Attribute.Type.DOUBLE));
         for (int itr = 0; itr < paramCount; itr++) {
             betaVal = "beta" + itr;
             attributes.add(new Attribute(betaVal, Attribute.Type.DOUBLE));
         }
         attributes.add(new Attribute("outlier", Attribute.Type.BOOL));
-        return attributes;
+        return null;
     }
 
     /**
@@ -245,11 +250,12 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
      */
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
-                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
+                           StreamEventCloner streamEventCloner,
+                           ComplexEventPopulater complexEventPopulater, State state) {
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 StreamEvent streamEvent = streamEventChunk.next();
-                long currentTime = siddhiAppContext.getTimestampGenerator().currentTime();
+                long currentTime = siddhiQueryContext.getSiddhiAppContext().getTimestampGenerator().currentTime();
                 long eventExpiryTime = currentTime + duration;
                 Boolean result = false; // Becomes true if its an outlier
                 Object[] inputData = new Object[paramCount];
@@ -319,13 +325,12 @@ public class LengthTimeLinearRegressionOutlierStreamProcessor extends StreamProc
     }
 
     @Override
-    public synchronized Map<String, Object> currentState() {
-        Map<String, Object> state = new HashMap<String, Object>();
-        return state;
+    public List<Attribute> getReturnAttributes() {
+        return attributes;
     }
 
     @Override
-    public synchronized void restoreState(Map<String, Object> state) {
-
+    public ProcessingMode getProcessingMode() {
+        return ProcessingMode.BATCH;
     }
 }
